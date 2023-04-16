@@ -1,0 +1,12 @@
+appId: com.madebycommon.sunshot
+productName: SunShot
+copyright: Copyright © 2023 Common
+directories:
+  output: dist
+  buildResources: resources
+files:
+  - from: .
+    filter:
+      - package.json
+      - app
+publish: null
