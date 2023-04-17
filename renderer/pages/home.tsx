@@ -5,19 +5,13 @@ import electron from "electron";
 
 const ipcRenderer = electron.ipcRenderer;
 
-// const remote = require("@electron/remote");
-// import remote from "@electron/remote";
-
 function Home() {
   const [message, setMessage] = React.useState("no ipc message");
 
   const onClickWithIpcSync = () => {
-    const sources = ipcRenderer.sendSync("test");
+    const sources = ipcRenderer.sendSync("get-sources");
 
     console.info("source", sources[0].id);
-
-    let mousePositions = [];
-    let startTime = Date.now();
 
     navigator.mediaDevices
       .getUserMedia({
@@ -32,94 +26,83 @@ function Home() {
             maxHeight: 720,
           },
         },
-      })
+      } as any)
       .then((stream) => {
         console.info("stream", stream);
+
+        // show selected stream
         const video = document.getElementById("testvideo") as HTMLVideoElement;
         video.srcObject = stream;
         video.width = 1280;
         video.height = 720;
-        // video.play();
         video.onloadedmetadata = (e) => video.play();
-        // console.info("video", video);
-        // const canvas = document.createElement("canvas");
-        // const ctx = canvas.getContext("2d");
-        // canvas.width = 1280;
-        // canvas.height = 720;
-        // const captureInterval = setInterval(() => {
-        //   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        //   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        //   const mousePosition = remote.screen.getCursorScreenPoint();
-        //   mousePositions.push({
-        //     x: mousePosition.x,
-        //     y: mousePosition.y,
-        //     timestamp: Date.now() - startTime,
-        //   });
-        // }, 100);
-        // const stopRecording = () => {
-        //   clearInterval(captureInterval);
-        //   stream.getTracks()[0].stop();
-        //   const blob = new Blob(chunks, { type: "video/webm" });
-        //   const url = URL.createObjectURL(blob);
-        //   const videoElement = document.createElement("video");
-        //   videoElement.src = url;
-        //   document.body.appendChild(videoElement);
-        //   const mousePositionsBlob = new Blob(
-        //     [JSON.stringify(mousePositions)],
-        //     { type: "application/json" }
-        //   );
-        //   const mousePositionsUrl = URL.createObjectURL(mousePositionsBlob);
-        //   const a = document.createElement("a");
-        //   a.href = mousePositionsUrl;
-        //   a.download = "mouse_positions.json";
-        //   a.click();
-        // };
-        // const chunks = [];
-        // const mediaRecorder = new MediaRecorder(stream, {
-        //   mimeType: "video/webm; codecs=vp9",
-        // });
-        // mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-        // mediaRecorder.onstop = stopRecording;
-        // mediaRecorder.start();
-        // setTimeout(() => mediaRecorder.stop(), 5000);
+
+        const stopRecording = () => {
+          // clearInterval(captureInterval);
+          ipcRenderer.sendSync("stop-mouse-tracking");
+
+          stream.getTracks()[0].stop();
+          const blob = new Blob(chunks, { type: "video/webm" });
+
+          // TODO: save blob
+
+          // const url = URL.createObjectURL(blob);
+          // const videoElement = document.createElement("video");
+          // videoElement.src = url;
+          // document.body.appendChild(videoElement);
+
+          // const mousePositionsBlob = new Blob(
+          //   [JSON.stringify(mousePositions)],
+          //   { type: "application/json" }
+          // );
+          // const mousePositionsUrl = URL.createObjectURL(mousePositionsBlob);
+          // const a = document.createElement("a");
+          // a.href = mousePositionsUrl;
+          // a.download = "mouse_positions.json";
+          // a.click();
+        };
+
+        const chunks = [];
+        const mediaRecorder = new MediaRecorder(stream, {
+          mimeType: "video/webm; codecs=vp9",
+        });
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+        mediaRecorder.onstop = stopRecording;
+        mediaRecorder.start();
+
+        ipcRenderer.sendSync("start-mouse-tracking");
+
+        setTimeout(() => mediaRecorder.stop(), 5000);
       })
       .catch((error) => console.log(error));
 
     setMessage(JSON.stringify(sources));
   };
 
-  // If we use ipcRenderer in this scope, we must check the instance exists
-  if (ipcRenderer) {
-    // In this scope, the webpack process is the client
-  }
-
   React.useEffect(() => {
-    ipcRenderer.on("ping-pong", (event, data) => {
-      setMessage(data);
-    });
-
-    // onClickWithIpc();
+    // ipcRenderer.on("ping-pong", (event, data) => {
+    //   setMessage(data);
+    // });
 
     return () => {
-      ipcRenderer.removeAllListeners("ping-pong");
+      // ipcRenderer.removeAllListeners("ping-pong");
     };
   }, []);
 
   return (
     <React.Fragment>
       <Head>
-        <title>Home - Nextron (with-typescript)</title>
+        <title>SunShot - Beautiful Screen Recordings</title>
       </Head>
       <div>
         <p>
-          ⚡ Electron + Next.js ⚡ - {message}
+          {message}
           <video id="testvideo"></video>
-          <button onClick={onClickWithIpcSync}>Test</button>
-          <Link href="/next">
+          <button onClick={onClickWithIpcSync}>Get Sources</button>
+          {/* <Link href="/next">
             <a>Go to next page</a>
-          </Link>
+          </Link> */}
         </p>
-        <img src="/images/logo.png" />
       </div>
     </React.Fragment>
   );
