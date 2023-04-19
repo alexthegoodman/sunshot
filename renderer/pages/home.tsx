@@ -11,7 +11,12 @@ function Home() {
   const onClickWithIpcSync = () => {
     const sources = ipcRenderer.sendSync("get-sources");
 
-    console.info("source", sources[0].id);
+    // TODO: source selection modal
+    // TODO: small window with record button
+    // could be one window. select source, then record button
+    // play 5 second tick sound before recording starts ?
+
+    console.info("sources", sources);
 
     navigator.mediaDevices
       .getUserMedia({
@@ -19,23 +24,30 @@ function Home() {
         video: {
           mandatory: {
             chromeMediaSource: "desktop",
-            chromeMediaSourceId: sources[0].id,
-            minWidth: 1920,
-            maxWidth: 1920,
-            minHeight: 1080,
-            maxHeight: 1080,
+            chromeMediaSourceId: sources[2].id,
+            // hd size
+            // minWidth: 1920,
+            // maxWidth: 1920,
+            // minHeight: 1080,
+            // maxHeight: 1080,
+            // 4k size
+            minWidth: 3840,
+            maxWidth: 3840,
+            minHeight: 2160,
+            maxHeight: 2160,
           },
         },
       } as any)
       .then((stream) => {
         console.info("stream", stream);
 
-        // show selected stream
+        // *** preview selected stream ***
         const video = document.getElementById("testvideo") as HTMLVideoElement;
         video.srcObject = stream;
-        // HD size (not sure on quality differential)
-        video.width = 1920;
-        video.height = 1080;
+        video.width = 3840 / 4;
+        video.height = 2160 / 4;
+        // video.width = stream.getVideoTracks()[0].getSettings().width;
+        // video.height = stream.getVideoTracks()[0].getSettings().height;
         video.onloadedmetadata = (e) => {
           video.play();
           console.info("play video");
@@ -49,26 +61,17 @@ function Home() {
           stream.getTracks()[0].stop();
           const blob = new Blob(chunks, { type: "video/webm" });
 
-          // TODO: save blob
+          // TODO: save blob as original stream (save alongside mousepositions.json?)
 
           // preview blob
-          // const url = URL.createObjectURL(blob);
-          // console.info("url", url);
-          // const videoElement = document.createElement("video");
-          // videoElement.src = url;
-          // videoElement.controls = true;
-          // videoElement.autoplay = true;
-          // document.body.appendChild(videoElement);
-
-          // const mousePositionsBlob = new Blob(
-          //   [JSON.stringify(mousePositions)],
-          //   { type: "application/json" }
-          // );
-          // const mousePositionsUrl = URL.createObjectURL(mousePositionsBlob);
-          // const a = document.createElement("a");
-          // a.href = mousePositionsUrl;
-          // a.download = "mouse_positions.json";
-          // a.click();
+          const url = URL.createObjectURL(blob);
+          const videoElement = document.createElement("video");
+          videoElement.src = url;
+          videoElement.controls = true;
+          videoElement.autoplay = true;
+          videoElement.width = 3840 / 4;
+          videoElement.height = 2160 / 4;
+          document.body.appendChild(videoElement);
         };
 
         // TODO: record original stream and from preview video
@@ -85,7 +88,7 @@ function Home() {
 
         console.info("start-mouse-tracking");
 
-        setTimeout(() => mediaRecorder.stop(), 5000);
+        setTimeout(() => mediaRecorder.stop(), 10000);
       })
       .catch((error) => console.log(error));
 

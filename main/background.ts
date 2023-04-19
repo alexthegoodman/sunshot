@@ -46,6 +46,22 @@ ipcMain.on("get-sources", (event, arg) => {
   desktopCapturer
     .getSources({ types: ["screen", "window"] })
     .then((sources) => {
+      // get size of each source
+      // for (const key in sources) {
+      //   const source = sources[key];
+      //   if (source.name === "Entire screen" || source.name === "Screen 1") {
+      //     try {
+      //       const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+      //       sources[key] = { ...source, width, height } as any;
+      //     } catch (e) {
+      //       console.error(e);
+      //     }
+      //   } else {
+
+      //     sources[key] = { ...source, width, height } as any;
+      //   }
+      // }
+
       event.returnValue = sources;
     });
 });
