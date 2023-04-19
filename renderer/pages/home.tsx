@@ -11,10 +11,11 @@ function Home() {
   const onClickWithIpcSync = () => {
     const sources = ipcRenderer.sendSync("get-sources");
 
-    // TODO: source selection modal
-    // TODO: small window with record button
-    // could be one window. select source, then record button
-    // play 5 second tick sound before recording starts ?
+    // home can prompt user to open previous project or start new recording
+    // New recording: select source, then record button
+    // starts recording instantly, user can use same window to stop recording
+    // (TBD: stream can be shortened in editor)
+    // after stop recording, it auto opens the editor
 
     console.info("sources", sources);
 
@@ -52,6 +53,11 @@ function Home() {
           video.play();
           console.info("play video");
         };
+
+        // TODO: load mousepositions.json and play alongside video
+
+        // need VideoPreview component from which to record and use during editing
+        // it can accept the blob rather than stream as it is after recording during editing
 
         const stopRecording = () => {
           // clearInterval(captureInterval);

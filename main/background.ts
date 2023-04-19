@@ -4,7 +4,7 @@ import { createWindow } from "./helpers";
 
 const { desktopCapturer } = require("electron");
 
-require("@electron/remote/main").initialize();
+// require("@electron/remote/main").initialize();
 
 const isProd: boolean = process.env.NODE_ENV === "production";
 
@@ -29,7 +29,7 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     // mainWindow.webContents.openDevTools();
 
-    require("@electron/remote/main").enable(mainWindow.webContents);
+    // require("@electron/remote/main").enable(mainWindow.webContents);
   }
 })();
 
@@ -92,6 +92,8 @@ ipcMain.on("stop-mouse-tracking", (event, arg) => {
   clearInterval(captureInterval);
 
   console.info("stop-mouse-tracking", startTime, mousePositions);
+
+  // TODO: save mousePositions to file in renderer/public folder
 
   event.returnValue = true;
 });
