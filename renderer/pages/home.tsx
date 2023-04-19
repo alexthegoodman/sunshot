@@ -20,10 +20,10 @@ function Home() {
           mandatory: {
             chromeMediaSource: "desktop",
             chromeMediaSourceId: sources[0].id,
-            minWidth: 1280,
-            maxWidth: 1280,
-            minHeight: 720,
-            maxHeight: 720,
+            minWidth: 1920,
+            maxWidth: 1920,
+            minHeight: 1080,
+            maxHeight: 1080,
           },
         },
       } as any)
@@ -33,22 +33,31 @@ function Home() {
         // show selected stream
         const video = document.getElementById("testvideo") as HTMLVideoElement;
         video.srcObject = stream;
-        video.width = 1280;
-        video.height = 720;
-        video.onloadedmetadata = (e) => video.play();
+        // HD size (not sure on quality differential)
+        video.width = 1920;
+        video.height = 1080;
+        video.onloadedmetadata = (e) => {
+          video.play();
+          console.info("play video");
+        };
 
         const stopRecording = () => {
           // clearInterval(captureInterval);
           ipcRenderer.sendSync("stop-mouse-tracking");
+          console.info("stop-mouse-tracking");
 
           stream.getTracks()[0].stop();
           const blob = new Blob(chunks, { type: "video/webm" });
 
           // TODO: save blob
 
+          // preview blob
           // const url = URL.createObjectURL(blob);
+          // console.info("url", url);
           // const videoElement = document.createElement("video");
           // videoElement.src = url;
+          // videoElement.controls = true;
+          // videoElement.autoplay = true;
           // document.body.appendChild(videoElement);
 
           // const mousePositionsBlob = new Blob(
@@ -62,6 +71,8 @@ function Home() {
           // a.click();
         };
 
+        // TODO: record original stream and from preview video
+
         const chunks = [];
         const mediaRecorder = new MediaRecorder(stream, {
           mimeType: "video/webm; codecs=vp9",
@@ -71,6 +82,8 @@ function Home() {
         mediaRecorder.start();
 
         ipcRenderer.sendSync("start-mouse-tracking");
+
+        console.info("start-mouse-tracking");
 
         setTimeout(() => mediaRecorder.stop(), 5000);
       })

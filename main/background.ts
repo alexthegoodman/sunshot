@@ -68,10 +68,14 @@ ipcMain.on("start-mouse-tracking", (event, arg) => {
   }, 100);
 
   console.info("start-mouse-tracking");
+
+  event.returnValue = true;
 });
 
 ipcMain.on("stop-mouse-tracking", (event, arg) => {
   clearInterval(captureInterval);
 
   console.info("stop-mouse-tracking", startTime, mousePositions);
+
+  event.returnValue = true;
 });
