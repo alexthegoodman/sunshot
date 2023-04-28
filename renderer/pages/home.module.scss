@@ -1,0 +1,22 @@
+.sources {
+  padding: 25px;
+
+  h1 {
+    font-size: 24px;
+    margin: 0 0 15px 0;
+  }
+
+  .sourceGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 25px;
+
+    video {
+      max-width: 100%;
+
+      &.selected {
+        border: 2px solid #ff0000;
+      }
+    }
+  }
+}
