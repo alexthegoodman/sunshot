@@ -61,6 +61,12 @@ function Home() {
             video.play();
             console.info("play video");
           };
+          video.onended = (e) => {
+            console.info("video ended");
+          };
+          video.onerror = (e) => {
+            console.error("video error", e);
+          };
         })
         .catch((error) => console.log(error));
     });
@@ -102,30 +108,37 @@ function Home() {
       <Head>
         <title>SunShot - Beautiful Screen Recordings</title>
       </Head>
-      <div className={styles.sources}>
-        <h1>Select Your Video Source</h1>
-        <div className={styles.sourceGrid}>
-          {sources?.map((sourceId) => (
-            <video
-              key={sourceId}
-              id={`video-${sourceId}`}
-              className={sourceId === selectedSource ? styles.selected : ""}
-              autoPlay
-              muted
-              onClick={handleSourceSelect}
-            />
-          ))}
-        </div>
+      <main className={styles.main}>
+        <div className={styles.sources}>
+          <h1>Select Your Video Source</h1>
+          <div className={styles.sourceGrid}>
+            {sources?.map((sourceId) => (
+              <video
+                key={sourceId}
+                id={`video-${sourceId}`}
+                className={sourceId === selectedSource ? styles.selected : ""}
+                autoPlay
+                muted
+                onClick={handleSourceSelect}
+              />
+            ))}
+          </div>
 
-        <button
-          onClick={handleStartRecording}
-          disabled={selectedSource ? false : true}
-        >
-          Start Recording
-        </button>
-        <button onClick={handleOpenProject}>Open a Project</button>
-        {/* <button onClick={handleOpenEditor}>Open Editor</button> */}
-      </div>
+          <div className={styles.ctrls}>
+            <button
+              className={styles.btn}
+              onClick={handleStartRecording}
+              disabled={selectedSource ? false : true}
+            >
+              Start Recording
+            </button>
+            <button className={styles.btn} onClick={handleOpenProject}>
+              Open a Project
+            </button>
+            {/* <button onClick={handleOpenEditor}>Open Editor</button> */}
+          </div>
+        </div>
+      </main>
     </React.Fragment>
   );
 }

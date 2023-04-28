@@ -11,9 +11,14 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@adobe/react-spectrum": "^3.26.0",
     "@electron/remote": "^2.0.9",
+    "@next/font": "^13.3.1",
+    "@spectrum-icons/workflow": "^4.2.0",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.1.0",
+    "next-transpile-modules": "^10.0.0",
+    "plop": "^3.1.2",
     "sass": "^1.62.1"
   },
   "devDependencies": {
