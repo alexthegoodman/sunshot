@@ -18,8 +18,8 @@ if (isProd) {
   await app.whenReady();
 
   const mainWindow = createWindow("main", {
-    width: 1000,
-    height: 600,
+    width: 500,
+    height: 335,
   });
 
   if (isProd) {
@@ -27,9 +27,6 @@ if (isProd) {
   } else {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
-    // mainWindow.webContents.openDevTools();
-
-    // require("@electron/remote/main").enable(mainWindow.webContents);
   }
 })();
 
@@ -41,27 +38,25 @@ app.on("window-all-closed", () => {
 //   event.sender.send("ping-pong", `[ipcMain] "${arg}" received asynchronously.`);
 // });
 
+ipcMain.on("open-editor", async (event, arg) => {
+  const editorWindow = createWindow("editor", {
+    width: 1440,
+    height: 1024,
+  });
+
+  if (isProd) {
+    await editorWindow.loadURL("app://./editor.html");
+  } else {
+    const port = process.argv[2];
+    await editorWindow.loadURL(`http://localhost:${port}/editor`);
+  }
+});
+
 ipcMain.on("get-sources", (event, arg) => {
   // TODO: error handling
   desktopCapturer
     .getSources({ types: ["screen", "window"] })
     .then((sources) => {
-      // get size of each source
-      // for (const key in sources) {
-      //   const source = sources[key];
-      //   if (source.name === "Entire screen" || source.name === "Screen 1") {
-      //     try {
-      //       const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-      //       sources[key] = { ...source, width, height } as any;
-      //     } catch (e) {
-      //       console.error(e);
-      //     }
-      //   } else {
-
-      //     sources[key] = { ...source, width, height } as any;
-      //   }
-      // }
-
       event.returnValue = sources;
     });
 });

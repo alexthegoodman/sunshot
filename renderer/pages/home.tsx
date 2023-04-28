@@ -111,6 +111,10 @@ function Home() {
     };
   }, []);
 
+  const handleOpenEditor = () => {
+    ipcRenderer.sendSync("open-editor");
+  };
+
   return (
     <React.Fragment>
       <Head>
@@ -121,6 +125,7 @@ function Home() {
           {message}
           <video id="testvideo"></video>
           <button onClick={onClickWithIpcSync}>Get Sources</button>
+          <button onClick={handleOpenEditor}>Open Editor</button>
           {/* <Link href="/next">
             <a>Go to next page</a>
           </Link> */}
