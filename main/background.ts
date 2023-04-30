@@ -1,6 +1,8 @@
 import { app, ipcMain, screen } from "electron";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
+import * as fs from "fs";
+import { randomUUID } from "crypto";
 
 const { desktopCapturer } = require("electron");
 
@@ -52,6 +54,17 @@ ipcMain.on("open-editor", async (event, arg) => {
   }
 });
 
+ipcMain.on("create-project", (event, arg) => {
+  console.info("create-project", arg);
+  const projectId = randomUUID();
+
+  fs.mkdirSync(__dirname + `/projects/${projectId}`, {
+    recursive: true,
+  });
+
+  event.returnValue = { projectId };
+});
+
 ipcMain.on("get-sources", (event, arg) => {
   // TODO: error handling
   desktopCapturer
@@ -83,12 +96,27 @@ ipcMain.on("start-mouse-tracking", (event, arg) => {
   event.returnValue = true;
 });
 
-ipcMain.on("stop-mouse-tracking", (event, arg) => {
+ipcMain.on("stop-mouse-tracking", (event, { projectId }) => {
   clearInterval(captureInterval);
 
   console.info("stop-mouse-tracking", startTime, mousePositions);
 
-  // TODO: save mousePositions to file in renderer/public folder
+  fs.writeFileSync(
+    __dirname + `/projects/${projectId}/mousePositions.json`,
+    JSON.stringify(mousePositions)
+  );
+
+  event.returnValue = true;
+});
+
+ipcMain.on("save-video-blob", (event, { projectId, buffer, sourceId }) => {
+  console.info("save-video-blob", event, projectId, buffer, sourceId);
+
+  // save buffer to custom project file format
+  fs.writeFileSync(
+    __dirname + `/projects/${projectId}/originalCapture.webm`,
+    buffer
+  );
 
   event.returnValue = true;
 });

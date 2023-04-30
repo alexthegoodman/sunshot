@@ -13,65 +13,82 @@ function Home() {
   const [selectedSource, setSelectedSource] = React.useState(null);
 
   const loadSourcePreviews = () => {
-    const sources = ipcRenderer.sendSync("get-sources");
-    const sourceIds = sources.map((source) => source.id);
+    let sources = ipcRenderer.sendSync("get-sources");
 
-    setSources(sourceIds);
-
-    console.info("sources", sources);
-
-    sources.forEach((source) => {
-      navigator.mediaDevices
-        .getUserMedia({
-          audio: false,
-          video: {
-            mandatory: {
-              chromeMediaSource: "desktop",
-              chromeMediaSourceId: source.id,
-              // hd size
-              // minWidth: 1920,
-              // maxWidth: 1920,
-              // minHeight: 1080,
-              // maxHeight: 1080,
-              // 4k size
-              // minWidth: 3840,
-              // maxWidth: 3840,
-              // minHeight: 2160,
-              // maxHeight: 2160,
-              // preview size
-              minWidth: 384,
-              maxWidth: 384,
-              minHeight: 216,
-              maxHeight: 216,
-            },
-          },
-        } as any)
-        .then((stream) => {
-          console.info("stream", stream);
-
-          // *** preview selected stream ***
-          const video = document.getElementById(
-            `video-${source.id}`
-          ) as HTMLVideoElement;
-          video.srcObject = stream;
-          // video.width = 384;
-          // video.height = 216;
-
-          video.onloadedmetadata = (e) => {
-            video.play();
-            console.info("play video");
-          };
-          video.onended = (e) => {
-            console.info("video ended");
-          };
-          video.onerror = (e) => {
-            console.error("video error", e);
-          };
-        })
-        .catch((error) => console.log(error));
-    });
+    setSources(sources);
 
     setMessage(JSON.stringify(sources));
+  };
+
+  const startRecording = (sourceId) => {
+    const { projectId } = ipcRenderer.sendSync("create-project");
+    console.info("create-project", projectId);
+
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: false,
+        video: {
+          mandatory: {
+            chromeMediaSource: "desktop",
+            chromeMediaSourceId: sourceId,
+            // 4k size default
+            minWidth: 3840,
+            maxWidth: 3840,
+            minHeight: 2160,
+            maxHeight: 2160,
+          },
+        },
+      } as any)
+      .then((stream) => {
+        console.info("stream", stream);
+
+        const stopRecording = async () => {
+          // clearInterval(captureInterval);
+          ipcRenderer.sendSync("stop-mouse-tracking", { projectId });
+          console.info("stop-mouse-tracking");
+
+          stream.getTracks()[0].stop();
+          const blob = new Blob(chunks, { type: "video/webm" });
+
+          const arrayBuffer = await blob.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+          // const newBlob = new Blob([buffer]);
+
+          // console.info("blog chunks", blob, chunks, buffer);
+
+          ipcRenderer.sendSync("save-video-blob", {
+            projectId,
+            buffer,
+            sourceId,
+          });
+          console.info("save-video-blob");
+
+          // const url = URL.createObjectURL(blob);
+          // const videoElement = document.createElement("video");
+          // videoElement.src = url;
+          // videoElement.controls = true;
+          // videoElement.autoplay = true;
+          // videoElement.width = 3840 / 4;
+          // videoElement.height = 2160 / 4;
+          // document.body.appendChild(videoElement);
+        };
+
+        const chunks = [];
+        const mediaRecorder = new MediaRecorder(stream, {
+          mimeType: "video/webm; codecs=vp9",
+        });
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+        mediaRecorder.onerror = (e) => console.error("mediaRecorder error", e);
+        mediaRecorder.onstop = stopRecording;
+        mediaRecorder.start();
+
+        ipcRenderer.sendSync("start-mouse-tracking");
+
+        console.info("start-mouse-tracking");
+
+        setTimeout(() => mediaRecorder.stop(), 10000);
+      })
+      .catch((error) => console.log(error));
   };
 
   React.useEffect(() => {
@@ -96,6 +113,7 @@ function Home() {
 
   const handleStartRecording = () => {
     // ipcRenderer.sendSync("start-recording");
+    startRecording(selectedSource);
   };
 
   const handleSourceSelect = (event) => {
@@ -109,20 +127,21 @@ function Home() {
         <title>SunShot - Beautiful Screen Recordings</title>
       </Head>
       <main className={styles.main}>
+        {/* {message} */}
         <div className={styles.sources}>
           <h1>Select Your Video Source</h1>
-          <div className={styles.sourceGrid}>
-            {sources?.map((sourceId) => (
-              <video
-                key={sourceId}
-                id={`video-${sourceId}`}
-                className={sourceId === selectedSource ? styles.selected : ""}
-                autoPlay
-                muted
+          <ul className={styles.sourceGrid}>
+            {sources?.map((source) => (
+              <li
+                key={source.id}
+                id={`video-${source.id}`}
+                className={source.id === selectedSource ? styles.selected : ""}
                 onClick={handleSourceSelect}
-              />
+              >
+                {source.name}
+              </li>
             ))}
-          </div>
+          </ul>
 
           <div className={styles.ctrls}>
             <button

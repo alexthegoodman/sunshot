@@ -25,6 +25,17 @@
         border: 2px solid #ff0000;
       }
     }
+
+    li {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+
+      &.selected {
+        border: 2px solid #ff0000;
+      }
+    }
   }
   .ctrls {
     display: flex;
