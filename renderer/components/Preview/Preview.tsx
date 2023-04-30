@@ -47,22 +47,37 @@ const Preview: React.FC<PreviewProps> = ({
     const zoomFactor = 2;
 
     // zoom in on point
+    // const refreshRate = 1000 / 60;
+    const refreshRate = 100;
     let point = 0;
-    const zoomInterval = setInterval(() => {
-      const zoomPoint = {
-        x: positions[point].x / 4,
-        y: positions[point].y / 4,
-      };
+    let timeElapsed = 0;
 
-      zoomIn(videoElement, zoomFactor, zoomPoint);
+    const zoomInterval = setInterval(() => {
+      timeElapsed += refreshRate;
+
+      zoomTracks.forEach((track) => {
+        if (Math.floor(timeElapsed) === Math.floor(track.start)) {
+          const predictionOffset = 10;
+          const zoomPoint = {
+            x: positions[point + predictionOffset].x / 4,
+            y: positions[point + predictionOffset].y / 4,
+          };
+
+          zoomIn(videoElement, zoomFactor, zoomPoint);
+        }
+
+        if (Math.floor(timeElapsed) === Math.floor(track.end)) {
+          zoomOut(videoElement);
+        }
+      });
 
       point++;
 
       if (point >= positions.length) {
-        zoomOut(videoElement);
+        // zoomOut(videoElement);
         clearInterval(zoomInterval);
       }
-    }, 100);
+    }, refreshRate);
   };
 
   return (
