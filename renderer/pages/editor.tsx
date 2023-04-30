@@ -1,8 +1,15 @@
-import React from "react";
+import { ipcRenderer } from "electron";
 import Head from "next/head";
 import Link from "next/link";
+import React, { useEffect } from "react";
 
 function Editor() {
+  useEffect(() => {
+    const { mousePositions, originalCapture } =
+      ipcRenderer.sendSync("get-project-data");
+    console.info("project data", mousePositions, originalCapture);
+  }, []);
+
   return (
     <React.Fragment>
       <Head>

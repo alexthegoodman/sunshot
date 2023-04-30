@@ -16,10 +16,14 @@ if (isProd) {
   app.setPath("userData", `${app.getPath("userData")} (development)`);
 }
 
+let mainWindow = null;
+let editorWindow = null;
+let currentProjectId = null;
+
 (async () => {
   await app.whenReady();
 
-  const mainWindow = createWindow("main", {
+  mainWindow = createWindow("main", {
     width: 500,
     height: 335,
   });
@@ -40,8 +44,10 @@ app.on("window-all-closed", () => {
 //   event.sender.send("ping-pong", `[ipcMain] "${arg}" received asynchronously.`);
 // });
 
-ipcMain.on("open-editor", async (event, arg) => {
-  const editorWindow = createWindow("editor", {
+ipcMain.on("open-editor", async (event, { projectId }) => {
+  currentProjectId = projectId;
+
+  editorWindow = createWindow("editor", {
     width: 1440,
     height: 1024,
   });
@@ -52,6 +58,14 @@ ipcMain.on("open-editor", async (event, arg) => {
     const port = process.argv[2];
     await editorWindow.loadURL(`http://localhost:${port}/editor`);
   }
+});
+
+ipcMain.on("close-source-picker", (event, arg) => {
+  console.info("close-source-picker", arg);
+
+  mainWindow.close();
+
+  event.returnValue = true;
 });
 
 ipcMain.on("create-project", (event, arg) => {
@@ -119,4 +133,21 @@ ipcMain.on("save-video-blob", (event, { projectId, buffer, sourceId }) => {
   );
 
   event.returnValue = true;
+});
+
+ipcMain.on("get-project-data", (event, args) => {
+  console.info("get-project-data", args);
+
+  const mousePositions = fs.readFileSync(
+    __dirname + `/projects/${currentProjectId}/mousePositions.json`
+  );
+
+  const originalCapture = fs.readFileSync(
+    __dirname + `/projects/${currentProjectId}/originalCapture.webm`
+  );
+
+  event.returnValue = {
+    mousePositions,
+    originalCapture,
+  };
 });

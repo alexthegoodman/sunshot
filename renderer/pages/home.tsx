@@ -6,11 +6,14 @@ import electron from "electron";
 import styles from "./home.module.scss";
 
 const ipcRenderer = electron.ipcRenderer;
+let currentMediaRecorder = null;
 
 function Home() {
   const [message, setMessage] = React.useState("no ipc message");
   const [sources, setSources] = React.useState([]);
   const [selectedSource, setSelectedSource] = React.useState(null);
+  const [isRecording, setIsRecording] = React.useState(false);
+  const [projectId, setProjectId] = React.useState(null);
 
   const loadSourcePreviews = () => {
     let sources = ipcRenderer.sendSync("get-sources");
@@ -22,7 +25,7 @@ function Home() {
 
   const startRecording = (sourceId) => {
     const { projectId } = ipcRenderer.sendSync("create-project");
-    console.info("create-project", projectId);
+    setProjectId(projectId);
 
     navigator.mediaDevices
       .getUserMedia({
@@ -43,6 +46,7 @@ function Home() {
         console.info("stream", stream);
 
         const stopRecording = async () => {
+          setIsRecording(false);
           // clearInterval(captureInterval);
           ipcRenderer.sendSync("stop-mouse-tracking", { projectId });
           console.info("stop-mouse-tracking");
@@ -63,6 +67,9 @@ function Home() {
           });
           console.info("save-video-blob");
 
+          ipcRenderer.sendSync("close-source-picker");
+          ipcRenderer.sendSync("open-editor", { projectId });
+
           // const url = URL.createObjectURL(blob);
           // const videoElement = document.createElement("video");
           // videoElement.src = url;
@@ -74,21 +81,26 @@ function Home() {
         };
 
         const chunks = [];
-        const mediaRecorder = new MediaRecorder(stream, {
+        currentMediaRecorder = new MediaRecorder(stream, {
           mimeType: "video/webm; codecs=vp9",
         });
-        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-        mediaRecorder.onerror = (e) => console.error("mediaRecorder error", e);
-        mediaRecorder.onstop = stopRecording;
-        mediaRecorder.start();
+        currentMediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+        currentMediaRecorder.onerror = (e) =>
+          console.error("mediaRecorder error", e);
+        currentMediaRecorder.onstop = stopRecording;
+        currentMediaRecorder.start();
 
         ipcRenderer.sendSync("start-mouse-tracking");
 
-        console.info("start-mouse-tracking");
+        setIsRecording(true);
 
-        setTimeout(() => mediaRecorder.stop(), 10000);
+        console.info("start-mouse-tracking");
       })
       .catch((error) => console.log(error));
+  };
+
+  const handleStopRecording = () => {
+    currentMediaRecorder.stop();
   };
 
   React.useEffect(() => {
@@ -102,10 +114,6 @@ function Home() {
       // ipcRenderer.removeAllListeners("ping-pong");
     };
   }, []);
-
-  const handleOpenEditor = () => {
-    ipcRenderer.sendSync("open-editor");
-  };
 
   const handleOpenProject = () => {
     // ipcRenderer.sendSync("open-project");
@@ -144,13 +152,20 @@ function Home() {
           </ul>
 
           <div className={styles.ctrls}>
-            <button
-              className={styles.btn}
-              onClick={handleStartRecording}
-              disabled={selectedSource ? false : true}
-            >
-              Start Recording
-            </button>
+            {isRecording ? (
+              <button className={styles.btn} onClick={handleStopRecording}>
+                Stop Recording
+              </button>
+            ) : (
+              <button
+                className={styles.btn}
+                onClick={handleStartRecording}
+                disabled={selectedSource ? false : true}
+              >
+                Start Recording
+              </button>
+            )}
+
             <button className={styles.btn} onClick={handleOpenProject}>
               Open a Project
             </button>
