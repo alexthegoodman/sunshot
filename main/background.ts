@@ -138,8 +138,10 @@ ipcMain.on("save-video-blob", (event, { projectId, buffer, sourceId }) => {
 ipcMain.on("get-project-data", (event, args) => {
   console.info("get-project-data", args);
 
-  const mousePositions = fs.readFileSync(
-    __dirname + `/projects/${currentProjectId}/mousePositions.json`
+  const mousePositions = JSON.parse(
+    fs.readFileSync(
+      __dirname + `/projects/${currentProjectId}/mousePositions.json`
+    ) as unknown as string
   );
 
   const originalCapture = fs.readFileSync(

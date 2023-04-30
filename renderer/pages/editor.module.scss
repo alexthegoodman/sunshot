@@ -1,0 +1,15 @@
+.videoPreview {
+  .currentVideoContainer {
+    width: calc(3840px / 4);
+    height: calc(2160px / 4);
+    overflow: hidden;
+
+    .currentVideo {
+      width: auto;
+      height: 100%;
+      transform-origin: top left;
+      //   transition: all 2s cubic-bezier(0.075, 0.82, 0.165, 1);
+      transition: all 0.1s;
+    }
+  }
+}
