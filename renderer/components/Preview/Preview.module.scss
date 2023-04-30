@@ -1,1 +1,37 @@
-/** Styles **/
+.previewContainer {
+  height: 65vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .videoPreview {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: radial-gradient(
+      circle,
+      rgba(40, 114, 251, 0.829) 0%,
+      rgb(44, 236, 111) 100%
+    );
+
+    .currentVideoContainer {
+      width: calc(3840px / 4);
+      height: calc(2160px / 4);
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0px 5px 10px 1px rgba(0, 0, 0, 0.3);
+
+      .currentVideo {
+        width: auto;
+        height: 100%;
+
+        transform-origin: top left;
+        //   transition: all 2s cubic-bezier(0.075, 0.82, 0.165, 1);
+        transition: all 0.1s;
+      }
+    }
+  }
+}

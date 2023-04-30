@@ -9,15 +9,17 @@ const Preview: React.FC<PreviewProps> = ({
   originalCapture = null,
 }) => {
   React.useEffect(() => {
-    // display orginalcapture buffer in video element
-    const videoElement = document.getElementById(
-      "originalCapture"
-    ) as HTMLVideoElement;
+    if (originalCapture) {
+      // display orginalcapture buffer in video element
+      const videoElement = document.getElementById(
+        "originalCapture"
+      ) as HTMLVideoElement;
 
-    const blob = new Blob([originalCapture], { type: "video/webm" });
-    const url = URL.createObjectURL(blob);
-    videoElement.src = url;
-  }, []);
+      const blob = new Blob([originalCapture], { type: "video/webm" });
+      const url = URL.createObjectURL(blob);
+      videoElement.src = url;
+    }
+  }, [originalCapture]);
 
   function zoomIn(videoElement, zoomFactor, zoomPoint) {
     const xOffset = -(zoomPoint.x * zoomFactor - zoomPoint.x);
