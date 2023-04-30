@@ -1,10 +1,11 @@
 import React, { useState, useReducer } from "react";
 
 export interface EditorContextState {
-  count: number;
+  videoTrack: any;
+  zoomTracks: any;
 }
 
-export const EditorContextState = { count: 0 };
+export const EditorContextState = { videoTrack: null, zoomTracks: null };
 
 export const EditorContextReducer = (
   state: EditorContextState,
@@ -17,7 +18,7 @@ export const EditorContextReducer = (
     default:
       return {
         ...state,
-        [action.type]: action.payload,
+        [action.key]: action.value,
       };
       break;
   }
@@ -30,3 +31,6 @@ export const EditorContext = React.createContext<{
   state: EditorContextState,
   dispatch: () => undefined,
 });
+
+export const useEditorContext = () =>
+  React.useContext(EditorContext) as unknown as any;

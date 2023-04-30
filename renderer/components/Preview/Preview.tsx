@@ -3,11 +3,14 @@ import * as React from "react";
 import styles from "./Preview.module.scss";
 
 import { PreviewProps } from "./Preview.d";
+import { useEditorContext } from "../../context/EditorContext/EditorContext";
 
 const Preview: React.FC<PreviewProps> = ({
   positions = null,
   originalCapture = null,
 }) => {
+  const [{ videoTrack, zoomTracks }, dispatch] = useEditorContext();
+
   React.useEffect(() => {
     if (originalCapture) {
       // display orginalcapture buffer in video element

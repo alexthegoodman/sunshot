@@ -1,1 +1,4 @@
-export interface TracksProps {}
+export interface TracksProps {
+  positions: any;
+  originalDuration: any;
+}

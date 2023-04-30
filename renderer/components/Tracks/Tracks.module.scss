@@ -1,20 +1,60 @@
 .tracksContainer {
   position: relative;
   width: 100%;
-  height: 35vh;
+  height: 25vh;
   overflow: hidden;
   background-color: darkgray;
 
   .tracksInner {
+    padding-top: 10px;
+
+    .ticks {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      width: 100%;
+
+      .tick {
+        display: flex;
+        flex-direction: row;
+        justify-content: right;
+        width: 100%;
+      }
+    }
+
     .track {
       background-color: slategrey;
       margin-bottom: 10px;
 
       .trackInner {
         position: relative;
+        height: 100px;
 
         .item {
           position: absolute;
+          height: 100%;
+          background-color: lightgray;
+        }
+      }
+
+      &.videoTrack {
+        .trackInner {
+          .item {
+            background-color: lightblue;
+            width: 100%;
+          }
+        }
+      }
+      &.zoomTrack {
+        .trackInner {
+          .item {
+            background-color: lightpink;
+
+            &:nth-of-type(2n) {
+              background-color: lightcoral;
+              width: 100%;
+            }
+          }
         }
       }
     }
