@@ -11,6 +11,8 @@ import {
   EditorContextReducer,
   EditorContextState,
 } from "../context/EditorContext/EditorContext";
+import EditorCtrls from "../components/EditorCtrls/EditorCtrls";
+import PreviewCanvas from "../components/PreviewCanvas/PreviewCanvas";
 
 function Editor() {
   const [positions, setPositions] = React.useState(null);
@@ -45,7 +47,16 @@ function Editor() {
         <section className={styles.editor}>
           <div className={styles.editorInner}>
             <section className={styles.mainPanel}>
-              <Preview
+              <EditorCtrls
+                positions={positions}
+                originalCapture={originalCapture}
+                originalDuration={originalDuration}
+              />
+              {/* <Preview
+                positions={positions}
+                originalCapture={originalCapture}
+              /> */}
+              <PreviewCanvas
                 positions={positions}
                 originalCapture={originalCapture}
               />

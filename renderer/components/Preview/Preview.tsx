@@ -8,6 +8,7 @@ import { useEditorContext } from "../../context/EditorContext/EditorContext";
 const Preview: React.FC<PreviewProps> = ({
   positions = null,
   originalCapture = null,
+  fullSize = false,
 }) => {
   const [{ videoTrack, zoomTracks }, dispatch] = useEditorContext();
 
@@ -82,8 +83,15 @@ const Preview: React.FC<PreviewProps> = ({
 
   return (
     <section className={styles.previewContainer}>
-      <section className={styles.videoPreview}>
-        <div className={styles.currentVideoContainer}>
+      <section id="exportPreview" className={styles.videoPreview}>
+        <div
+          className={styles.currentVideoContainer}
+          style={
+            fullSize
+              ? { width: 3840 * 0.8, height: 2160 * 0.8 } // padding for gradient
+              : { width: 3840 / 4, height: 2160 / 4 } // padding + visual size
+          }
+        >
           <video
             id="originalCapture"
             className={styles.currentVideo}

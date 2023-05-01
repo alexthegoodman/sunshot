@@ -1,0 +1,15 @@
+.exportPreview {
+}
+
+.currentVideoContainer {
+  position: absolute;
+  visibility: hidden;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+
+  .currentVideo {
+    width: 3840px;
+    height: 2160px;
+  }
+}

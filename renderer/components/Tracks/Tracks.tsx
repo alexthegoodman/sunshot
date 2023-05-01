@@ -15,18 +15,33 @@ const Tracks: React.FC<TracksProps> = ({
   const seconds = nearestSecond / 1000;
 
   React.useEffect(() => {
+    // const testZoomTracks = [
+    //   {
+    //     id: 1,
+    //     start: 3000,
+    //     end: 13000,
+    //     zoomFactor: 2,
+    //   },
+    //   {
+    //     id: 2,
+    //     start: 18000,
+    //     end: 23000,
+    //     zoomFactor: 3,
+    //   },
+    //   {
+    //     id: 3,
+    //     start: 35000,
+    //     end: 45000,
+    //     zoomFactor: 3,
+    //   },
+    // ];
+
     const testZoomTracks = [
       {
         id: 1,
-        start: 4000,
-        end: 15000,
+        start: 1000,
+        end: 3000,
         zoomFactor: 2,
-      },
-      {
-        id: 2,
-        start: 18000,
-        end: 23000,
-        zoomFactor: 3,
       },
     ];
 
