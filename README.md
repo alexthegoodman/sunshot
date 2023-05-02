@@ -1,13 +1,14 @@
 # SunShot - Beautiful Screen Recordings
 
 - Electron / Next.js
-- Windows Only
+- Windows Only (for now)
 
 ## Getting Started
 
 ### Install Dependencies
 
 ```
+`choco install ffmpeg`
 `npm install`
 ```
 

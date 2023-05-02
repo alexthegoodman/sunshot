@@ -5,6 +5,13 @@
   "version": "1.0.0",
   "author": "Alex Goodman <alexthegoodman@gmail.com>",
   "main": "app/background.js",
+  "build": {
+    "asarUnpack": [
+      "node_modules/ffmpeg-static/bin/${os}/${arch}/ffmpeg",
+      "node_modules/ffmpeg-static/index.js",
+      "node_modules/ffmpeg-static/package.json"
+    ]
+  },
   "scripts": {
     "dev": "nextron",
     "build": "nextron build",
@@ -17,6 +24,9 @@
     "@spectrum-icons/workflow": "^4.2.0",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.1.0",
+    "ffmpeg-static": "^5.1.0",
+    "ffprobe-static": "^3.1.0",
+    "fluent-ffmpeg": "^2.1.2",
     "next-transpile-modules": "^10.0.0",
     "plop": "^3.1.2",
     "sass": "^1.62.1"

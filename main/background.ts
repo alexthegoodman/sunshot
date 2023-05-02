@@ -5,6 +5,22 @@ import * as fs from "fs";
 import { randomUUID } from "crypto";
 
 const { desktopCapturer } = require("electron");
+const path = require("path");
+
+// https://alexandercleasby.dev/blog/use-ffmpeg-electron
+const ffmpeg = require("fluent-ffmpeg");
+
+const ffmpegPath = require("ffmpeg-static").replace(
+  "app.asar",
+  "app.asar.unpacked"
+);
+const ffprobePath = require("ffprobe-static").path.replace(
+  "app.asar",
+  "app.asar.unpacked"
+);
+
+ffmpeg.setFfmpegPath(ffmpegPath);
+ffmpeg.setFfprobePath(ffprobePath);
 
 // require("@electron/remote/main").initialize();
 
@@ -152,4 +168,55 @@ ipcMain.on("get-project-data", (event, args) => {
     mousePositions,
     originalCapture,
   };
+});
+
+ipcMain.on("get-transformed-video", (event, { zoomTracks }) => {
+  console.info("get-transformed-video", currentProjectId, zoomTracks);
+
+  // const mousePositions = JSON.parse(
+  //   fs.readFileSync(
+  //     __dirname + `/projects/${currentProjectId}/mousePositions.json`
+  //   ) as unknown as string
+  // );
+
+  // const originalCapture = fs.readFileSync(
+  //   __dirname + `/projects/${currentProjectId}/originalCapture.webm`
+  // );
+
+  const inputVideoPath = path.join(
+    __dirname,
+    `/projects/${currentProjectId}/originalCapture.webm`
+  );
+  const outputVideoPath = path.join(
+    __dirname,
+    `/projects/${currentProjectId}/transformedCapture.webm`
+  );
+
+  // Define the cubic-bezier control points
+  const easing = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+
+  // Apply zoom and pan effect with cubic-bezier easing
+  ffmpeg(inputVideoPath)
+    .videoCodec("libvpx-vp9")
+    .noAudio()
+    // .complexFilter([
+    //   `[0:v]zoompan=z='if(lte(zoom,1.0),1.5,max(1.001,zoom-0.0015))':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=100`,
+    //   // `zoompan=z=\'min(zoom+0.0015,1.5)\':d=700:x=\'iw/2-(iw/zoom/2)\':y=\'ih/2-(ih/zoom/2)\'`,
+    // ])
+    .output(outputVideoPath)
+    .on("start", (commandLine) => {
+      console.log("Started FFMpeg with command:", commandLine);
+    })
+    .on("end", () => {
+      console.log("Finished processing the video");
+    })
+    .on("error", (error) => {
+      console.error(
+        "An error occurred while processing the video:",
+        error.message
+      );
+    })
+    .run();
+
+  event.returnValue = {};
 });
