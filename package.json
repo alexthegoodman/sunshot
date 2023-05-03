@@ -29,9 +29,12 @@
     "ffmpeg-static": "^5.1.0",
     "ffprobe-static": "^3.1.0",
     "fluent-ffmpeg": "^2.1.2",
+    "konva": "^9.0.1",
     "next-transpile-modules": "^10.0.0",
     "plop": "^3.1.2",
-    "sass": "^1.62.1"
+    "react-konva": "^18.2.7",
+    "sass": "^1.62.1",
+    "use-image": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",

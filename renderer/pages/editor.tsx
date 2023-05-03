@@ -14,6 +14,7 @@ import {
 import EditorCtrls from "../components/EditorCtrls/EditorCtrls";
 import PreviewCanvas from "../components/PreviewCanvas/PreviewCanvas";
 import FabricCanvas from "../components/FabricCanvas/FabricCanvas";
+import KonvaCanvas from "../components/KonvaCanvas/KonvaCanvas";
 
 function Editor() {
   const [positions, setPositions] = React.useState(null);
@@ -63,7 +64,12 @@ function Editor() {
                 positions={positions}
                 originalCapture={originalCapture}
               /> */}
-              <FabricCanvas
+              {/* <FabricCanvas
+                positions={positions}
+                originalCapture={originalCapture}
+                originalCapture25={originalCapture25}
+              /> */}
+              <KonvaCanvas
                 positions={positions}
                 originalCapture={originalCapture}
                 originalCapture25={originalCapture25}

@@ -61,6 +61,15 @@ const FabricCanvas: React.FC<FabricCanvasProps> = ({
         // }),
       });
 
+      const rectClip = new fabric.Rect({
+        left: -3840 / 2,
+        top: -2160 / 2,
+        width: 3840,
+        height: 2160,
+        originX: "left",
+        originY: "top",
+      });
+
       var rect = new fabric.Image(videoElement, {
         left: 0,
         top: 0,
@@ -74,61 +83,77 @@ const FabricCanvas: React.FC<FabricCanvasProps> = ({
         cacheProperties: ["videoTime"],
         originX: "left",
         originY: "top",
+        clipPath: rectClip,
       });
 
-      var group = new fabric.Group([test, rect], {
-        // left: 0,
-        // top: 0,
-        // scaleX: 1,
-        // scaleY: 1,
-        // width: 3840,
-        // height: 2160,
-        objectCaching: false,
-        // originX: "left",
-        // originY: "top",
-        // left: 0,
-        // top: 0,
-        // width: 3480,
-        // height: 2160,
-        // clipPath: new fabric.Rect({
-        //   fill: "red",
-        //   width: 1000,
-        //   height: 1000,
-        //   originX: "",
-        //   originY: "center",
-        // }),
-        // cacheProperties: ["videoTime"],
-        // clipPath: new fabric.Rect({
-        //   left: 0,
-        //   top: 0,
-        //   width: 1000,
-        //   height: 1000,
-        //   originX: "left",
-        //   originY: "top",
-        // }),
-      });
+      //   var group = new fabric.Group([test, rect], {
+      //     // left: 0,
+      //     // top: 0,
+      //     // scaleX: 1,
+      //     // scaleY: 1,
+      //     // width: 3840,
+      //     // height: 2160,
+      //     objectCaching: false,
+      //     // statefullCache: true,
+      //     // originX: "left",
+      //     // originY: "top",
+      //     // left: 0,
+      //     // top: 0,
+      //     // width: 3480,
+      //     // height: 2160,
+      //     // clipPath: new fabric.Rect({
+      //     //   fill: "red",
+      //     //   width: 1000,
+      //     //   height: 1000,
+      //     //   originX: "",
+      //     //   originY: "center",
+      //     // }),
+      //     // cacheProperties: ["videoTime"],
+      //     // clipPath: new fabric.Rect({
+      //     //   left: 0,
+      //     //   top: 0,
+      //     //   width: 1000,
+      //     //   height: 1000,
+      //     //   originX: "left",
+      //     //   originY: "top",
+      //     // }),
+      //   });
 
-      //   canvas.add(rect);
+      canvas.add(rect);
       //   canvas.add(test);
 
       rect.scale(0.25);
 
-      canvas.add(group);
+      //   canvas.add(group);
 
       videoElement.load();
       rect.getElement().play();
 
-      rect.animate(
+      //   rect.animate(
+      //     {
+      //       scaleX: 0.5,
+      //       scaleY: 0.5,
+      //       // top: -2160 / 2 - 100,
+      //       // left: -3840 / 2 - 100,
+      //     }, // base 0.25
+      //     {
+      //       onChange: canvas.renderAll.bind(canvas),
+      //       duration: 2000,
+      //       //   easing: fabric.util.ease.easeOutExpo,
+      //     }
+      //   );
+
+      rectClip.animate(
         {
           scaleX: 0.5,
           scaleY: 0.5,
-          top: -2160 / 2 - 100,
-          left: -3840 / 2 - 100,
+          // top: -2160 / 2,
+          // left: -3840 / 2,
         }, // base 0.25
         {
           onChange: canvas.renderAll.bind(canvas),
           duration: 2000,
-          easing: fabric.util.ease.easeOutExpo,
+          //   easing: fabric.util.ease.easeOutExpo,
         }
       );
 
@@ -138,7 +163,7 @@ const FabricCanvas: React.FC<FabricCanvasProps> = ({
       fabric.util.requestAnimFrame(function render() {
         canvas.renderAll();
         rect.videoTime = videoElement.currentTime;
-        group.videoTime = videoElement.currentTime;
+        // group.videoTime = videoElement.currentTime;
         fabric.util.requestAnimFrame(render);
       });
     }
