@@ -13,6 +13,7 @@ const height25 = 2160 / 4;
 const innerWidth = width25 * 0.8;
 const innerHeight = height25 * 0.8;
 
+// https://stackoverflow.com/questions/59741398/play-video-on-canvas-in-react-konva
 const Video = ({ src }) => {
   const imageRef = React.useRef(null);
   const [size, setSize] = React.useState({ width: 50, height: 50 });
@@ -63,67 +64,6 @@ const Video = ({ src }) => {
   );
 };
 
-class URLImage extends React.Component {
-  state = {
-    image: null,
-  };
-  componentDidMount() {
-    this.loadImage();
-  }
-  componentDidUpdate(oldProps) {
-    if (oldProps.src !== this.props.src) {
-      this.loadImage();
-    }
-  }
-  componentWillUnmount() {
-    this.image.removeEventListener("loadeddata", this.handleLoad);
-  }
-  loadImage() {
-    // save to "this" to remove "load" handler on unmount
-    // this.image = new window.Image();
-    // this.image.src = this.props.src;
-    console.info("load image");
-    this.image = document.createElement("video") as HTMLVideoElement;
-
-    var source = document.createElement("source");
-
-    source.src = this.props.src;
-    source.type = "video/webm";
-
-    this.image.appendChild(source);
-
-    // this.image.setAttribute("src", this.props.src);
-    this.image.addEventListener("loadeddata", this.handleLoad);
-
-    document.getElementsByTagName("body")[0].appendChild(this.image);
-  }
-  handleLoad = () => {
-    // after setState react-konva will update canvas and redraw the layer
-    // because "image" property is changed
-    console.info("loaded", this.image);
-    this.setState({
-      image: this.image,
-    });
-    // if you keep same image object during source updates
-    // you will have to update layer manually:
-    // this.imageNode.getLayer().batchDraw();
-  };
-  render() {
-    return (
-      <Image
-        x={this.props.x}
-        y={this.props.y}
-        width={this.props.width}
-        height={this.props.height}
-        image={this.state.image as HTMLVideoElement}
-        ref={(node) => {
-          this.imageNode = node;
-        }}
-      />
-    );
-  }
-}
-
 const KonvaCanvas: React.FC<KonvaCanvasProps> = () => {
   return (
     <Stage width={width25} height={height25}>
@@ -136,21 +76,6 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = () => {
         >
           <Rect width={width25} height={height25} fill="red"></Rect>
           <Text text="Try click on rect" />
-          {/* <Image image={}></Image> */}
-          {/* <Image
-            image={
-              new Konva.Image({
-                width: 100,
-                height: 100,
-              })
-            }
-          ></Image> */}
-          {/* <URLImage
-            src="/originalCapture.webm"
-            x={150}
-            width={width25}
-            height={height25}
-          /> */}
           <Video src="/originalCapture.webm" />
         </Group>
       </Layer>
