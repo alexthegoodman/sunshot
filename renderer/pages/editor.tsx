@@ -13,16 +13,18 @@ import {
 } from "../context/EditorContext/EditorContext";
 import EditorCtrls from "../components/EditorCtrls/EditorCtrls";
 import PreviewCanvas from "../components/PreviewCanvas/PreviewCanvas";
+import FabricCanvas from "../components/FabricCanvas/FabricCanvas";
 
 function Editor() {
   const [positions, setPositions] = React.useState(null);
   const [originalCapture, setOriginalCapture] = React.useState(null);
+  const [originalCapture25, setOriginalCapture25] = React.useState(null); // 25% of original capture
   const [originalDuration, setOriginalDuration] = React.useState(null);
 
   useEffect(() => {
-    const { mousePositions, originalCapture } =
+    const { mousePositions, originalCapture, originalCapture25 } =
       ipcRenderer.sendSync("get-project-data");
-    console.info("project data", mousePositions, originalCapture);
+    console.info("project data", mousePositions, originalCapture25);
 
     // do not repeat save mouse positions or original capture
     // in the saved context data
@@ -33,6 +35,7 @@ function Editor() {
 
     setPositions(mousePositions);
     setOriginalCapture(originalCapture);
+    setOriginalCapture25(originalCapture25);
     setOriginalDuration(duration);
   }, []);
 
@@ -49,16 +52,21 @@ function Editor() {
             <section className={styles.mainPanel}>
               <EditorCtrls
                 positions={positions}
-                originalCapture={originalCapture}
+                // originalCapture={originalCapture}
                 originalDuration={originalDuration}
               />
               {/* <Preview
                 positions={positions}
                 originalCapture={originalCapture}
               /> */}
-              <PreviewCanvas
+              {/* <PreviewCanvas
                 positions={positions}
                 originalCapture={originalCapture}
+              /> */}
+              <FabricCanvas
+                positions={positions}
+                originalCapture={originalCapture}
+                originalCapture25={originalCapture25}
               />
               <Tracks
                 positions={positions}

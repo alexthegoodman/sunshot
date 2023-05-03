@@ -148,7 +148,24 @@ ipcMain.on("save-video-blob", (event, { projectId, buffer, sourceId }) => {
     buffer
   );
 
-  event.returnValue = true;
+  // use ffmpeg to size down 1/4th
+  const inputVideoPath = path.join(
+    __dirname,
+    `/projects/${projectId}/originalCapture.webm`
+  );
+  const outputVideoPath = path.join(
+    __dirname,
+    `/projects/${projectId}/originalCapture25.webm`
+  );
+
+  // resize with fluent-ffmpeg
+  ffmpeg(inputVideoPath)
+    .outputOptions(["-vf scale=iw/4:ih/4"])
+    .save(outputVideoPath)
+    .on("end", () => {
+      console.log("resized video");
+      event.returnValue = true;
+    });
 });
 
 ipcMain.on("get-project-data", (event, args) => {
@@ -164,9 +181,14 @@ ipcMain.on("get-project-data", (event, args) => {
     __dirname + `/projects/${currentProjectId}/originalCapture.webm`
   );
 
+  const originalCapture25 = fs.readFileSync(
+    __dirname + `/projects/${currentProjectId}/originalCapture25.webm`
+  );
+
   event.returnValue = {
     mousePositions,
     originalCapture,
+    originalCapture25,
   };
 });
 
@@ -195,17 +217,34 @@ ipcMain.on("get-transformed-video", (event, { zoomTracks }) => {
   // Define the cubic-bezier control points
   const easing = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
 
+  const gradientStops = [
+    { color: "#000000", position: 0 },
+    { color: "#FFFFFF", position: 1 },
+  ];
+
   // Apply zoom and pan effect with cubic-bezier easing
   ffmpeg(inputVideoPath)
     .videoCodec("libvpx-vp9")
     .noAudio()
-    // .complexFilter([
-    //   `[0:v]zoompan=z='if(lte(zoom,1.0),1.5,max(1.001,zoom-0.0015))':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=100`,
-    //   // `zoompan=z=\'min(zoom+0.0015,1.5)\':d=700:x=\'iw/2-(iw/zoom/2)\':y=\'ih/2-(ih/zoom/2)\'`,
-    // ])
+    .complexFilter([
+      // `[0:v]zoompan=z='if(lte(zoom,1.0),1.5,max(1.001,zoom-0.0015))':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=100`,
+      // `zoompan=z='min(zoom+0.0015,1.5)':d=700:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=100`,
+      // `zoompan=z=pzoom+0.01:x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1280x720:fps=30`,
+      // Add a gradient background
+      `[0:v]drawbox=c=gradient:w=iw:h=ih:t=0.5:s=${gradientStops
+        .map((s) => `${s.color}@${s.position}`)
+        .join(":")}[bg]`,
+      // Apply zoom and pan effect with easing
+      // `[bg]zoompan=z=pzoom+0.01:x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1280x720:fps=30[zoomed]`,
+      // // Overlay the zoomed video onto the gradient background
+      // `[zoomed][bg]overlay=(W-w)/2:(H-h)/2`,
+    ])
     .output(outputVideoPath)
     .on("start", (commandLine) => {
       console.log("Started FFMpeg with command:", commandLine);
+    })
+    .on("progress", (progress) => {
+      console.log("Processing: " + JSON.stringify(progress));
     })
     .on("end", () => {
       console.log("Finished processing the video");
