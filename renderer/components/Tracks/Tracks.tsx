@@ -37,10 +37,23 @@ const Tracks: React.FC<TracksProps> = ({
     // ];
 
     const testZoomTracks = [
+      // {
+      //   id: 1,
+      //   start: 1000,
+      //   end: 3000,
+      //   zoomFactor: 2,
+      // },
       {
         id: 1,
-        start: 1000,
-        end: 3000,
+        start: 3000,
+        end: 7000,
+        zoomFactor: 2,
+      },
+
+      {
+        id: 1,
+        start: 10000,
+        end: 13000,
         zoomFactor: 2,
       },
     ];
