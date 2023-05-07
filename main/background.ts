@@ -7,6 +7,8 @@ import { randomUUID } from "crypto";
 const { desktopCapturer } = require("electron");
 const path = require("path");
 
+const { print, setTargetWindow } = require('sunshot-recorder');
+
 // https://alexandercleasby.dev/blog/use-ffmpeg-electron
 const ffmpeg = require("fluent-ffmpeg");
 
@@ -43,6 +45,9 @@ let currentProjectId = null;
     width: 500,
     height: 335,
   });
+
+  mainWindow.setMenu(null);
+  // mainWindow.setResizable(false);
 
   if (isProd) {
     await mainWindow.loadURL("app://./home.html");
@@ -97,6 +102,10 @@ ipcMain.on("create-project", (event, arg) => {
 
 ipcMain.on("get-sources", (event, arg) => {
   // TODO: error handling
+
+  console.log(print("test"));
+  console.info(setTargetWindow())
+
   desktopCapturer
     .getSources({ types: ["screen", "window"] })
     .then((sources) => {

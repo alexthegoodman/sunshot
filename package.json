@@ -18,14 +18,10 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "@adobe/react-spectrum": "^3.26.0",
     "@electron/remote": "^2.0.9",
     "@next/font": "^13.3.1",
-    "@spectrum-icons/workflow": "^4.2.0",
-    "@types/fabric": "^5.3.2",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.1.0",
-    "fabric": "^5.2.1",
     "ffmpeg-static": "^5.1.0",
     "ffprobe-static": "^3.1.0",
     "fluent-ffmpeg": "^2.1.2",
@@ -37,9 +33,10 @@
     "use-image": "^1.1.0"
   },
   "devDependencies": {
+    "@electron/rebuild": "^3.2.13",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.26",
-    "electron": "^21.3.3",
+    "electron": "21.4.4",
     "electron-builder": "^23.6.0",
     "next": "^12.3.4",
     "nextron": "^8.5.0",

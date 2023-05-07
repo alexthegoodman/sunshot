@@ -35,15 +35,21 @@ function Home() {
             chromeMediaSource: "desktop",
             chromeMediaSourceId: sourceId,
             // 4k size default
-            minWidth: 3840,
-            maxWidth: 3840,
-            minHeight: 2160,
-            maxHeight: 2160,
+            // minWidth: 3840,
+            // maxWidth: 3840,
+            // minHeight: 2160,
+            // maxHeight: 2160,
           },
         },
       } as any)
       .then((stream) => {
         console.info("stream", stream);
+
+        const streamSettings = stream.getVideoTracks()[0].getSettings();
+        const streamWidth = stream.getVideoTracks()[0].getSettings().width
+        const streamHeight = stream.getVideoTracks()[0].getSettings().height
+
+        console.info("stream settings", streamSettings, JSON.stringify(streamSettings), streamWidth, streamHeight);
 
         const stopRecording = async () => {
           setIsRecording(false);
@@ -67,17 +73,22 @@ function Home() {
           });
           console.info("save-video-blob");
 
-          ipcRenderer.sendSync("close-source-picker");
-          ipcRenderer.sendSync("open-editor", { projectId });
+          // ipcRenderer.sendSync("close-source-picker");
+          // ipcRenderer.sendSync("open-editor", { projectId });
 
-          // const url = URL.createObjectURL(blob);
-          // const videoElement = document.createElement("video");
-          // videoElement.src = url;
-          // videoElement.controls = true;
-          // videoElement.autoplay = true;
+          const url = URL.createObjectURL(blob);
+          const videoElement = document.createElement("video");
+          videoElement.src = url;
+          videoElement.controls = true;
+          videoElement.autoplay = true;
+          videoElement.onloadedmetadata = () => {
+            // successful retrieval of video dimensions
+            // what of monitor position?
+            console.info("video loaded", videoElement.videoWidth, videoElement.videoHeight);
+          };
           // videoElement.width = 3840 / 4;
           // videoElement.height = 2160 / 4;
-          // document.body.appendChild(videoElement);
+          document.body.appendChild(videoElement);
         };
 
         const chunks = [];
