@@ -1,5 +1,11 @@
+import {
+  Position,
+  SourceData,
+} from "../../context/EditorContext/EditorContext";
+
 export interface KonvaCanvasProps {
-  positions: any;
-  originalCapture: any;
-  originalCapture25: any;
+  positions: Position[];
+  originalCapture: Buffer;
+  originalCapture25?: Buffer;
+  sourceData: SourceData;
 }

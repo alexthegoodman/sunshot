@@ -1,4 +1,7 @@
+import { Position } from "../../context/EditorContext/EditorContext";
+
 export interface EditorCtrlsProps {
-  positions: any;
-  originalCapture: any;
+  positions: Position[];
+  originalCapture?: Buffer;
+  originalDuration: number;
 }

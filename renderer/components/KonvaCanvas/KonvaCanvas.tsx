@@ -16,7 +16,7 @@ const innerWidth = width25 * 0.8;
 const innerHeight = height25 * 0.8;
 
 // https://stackoverflow.com/questions/59741398/play-video-on-canvas-in-react-konva
-const Video = ({ src, positions, zoomTracks }) => {
+const Video = ({ src, positions, zoomTracks, sourceData }) => {
   const imageRef = React.useRef<ImageType>(null);
   const [size, setSize] = React.useState({ width: 50, height: 50 });
   const [zoomedIn, setZoomedIn] = React.useState(false);
@@ -102,8 +102,8 @@ const Video = ({ src, positions, zoomTracks }) => {
           if (Math.floor(timeElapsed) === Math.floor(track.start)) {
             const predictionOffset = 0;
             const zoomPoint = {
-              x: (positions[point + predictionOffset].x / 4) * 0.8,
-              y: (positions[point + predictionOffset].y / 4) * 0.8,
+              x: ((positions[point + predictionOffset].x - sourceData.x) / 4) * 0.8,
+              y: ((positions[point + predictionOffset].y - sourceData.y) / 4) * 0.8,
             };
 
             zoomIn(zoomFactor, zoomPoint);
@@ -146,6 +146,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   positions = null,
   originalCapture = null,
   originalCapture25 = null,
+  sourceData = null,
 }) => {
   const [{ zoomTracks }, dispatch] = useEditorContext();
   const stageRef = React.useRef(null);
@@ -245,6 +246,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
               src={originalCapture}
               zoomTracks={zoomTracks}
               positions={positions}
+              sourceData={sourceData}
             />
           </Group>
         </Layer>

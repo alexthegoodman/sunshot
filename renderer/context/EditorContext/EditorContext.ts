@@ -1,11 +1,41 @@
 import React, { useState, useReducer } from "react";
 
-export interface EditorContextState {
-  videoTrack: any;
-  zoomTracks: any;
+export interface SourceData {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
-export const EditorContextState = { videoTrack: null, zoomTracks: null };
+export interface Position {
+  x: number;
+  y: number;
+  timestamp: number;
+}
+
+export interface Track {
+  id: string;
+  start: number;
+  end: number;
+}
+
+export interface VideoTrack extends Track {}
+
+export interface ZoomTrack extends Track {
+  zoomFactor: number;
+}
+
+export interface EditorContextState {
+  videoTrack: VideoTrack | null;
+  zoomTracks: ZoomTrack[] | null;
+  selectedTrack: string | null;
+}
+
+export const EditorContextState = {
+  videoTrack: null,
+  zoomTracks: null,
+  selectedTrack: null,
+};
 
 export const EditorContextReducer = (
   state: EditorContextState,

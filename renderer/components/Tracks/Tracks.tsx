@@ -3,63 +3,62 @@ import * as React from "react";
 import styles from "./Tracks.module.scss";
 
 import { TracksProps } from "./Tracks.d";
-import { useEditorContext } from "../../context/EditorContext/EditorContext";
+import {
+  VideoTrack,
+  useEditorContext,
+} from "../../context/EditorContext/EditorContext";
+import { randomUUID } from "crypto";
 
 const Tracks: React.FC<TracksProps> = ({
   positions = null,
   originalDuration = null,
 }) => {
-  const [{ videoTrack, zoomTracks }, dispatch] = useEditorContext();
+  const [{ videoTrack, zoomTracks, selectedTrack }, dispatch] =
+    useEditorContext();
 
   const nearestSecond = Math.ceil(originalDuration / 1000) * 1000;
   const seconds = nearestSecond / 1000;
 
   React.useEffect(() => {
-    // const testZoomTracks = [
-    //   {
-    //     id: 1,
-    //     start: 3000,
-    //     end: 13000,
-    //     zoomFactor: 2,
-    //   },
-    //   {
-    //     id: 2,
-    //     start: 18000,
-    //     end: 23000,
-    //     zoomFactor: 3,
-    //   },
-    //   {
-    //     id: 3,
-    //     start: 35000,
-    //     end: 45000,
-    //     zoomFactor: 3,
-    //   },
-    // ];
+    if (originalDuration) {
+      const initalVideoTrack: VideoTrack = {
+        id: randomUUID(),
+        start: 0,
+        end: originalDuration,
+      };
 
-    const testZoomTracks = [
-      // {
-      //   id: 1,
-      //   start: 1000,
-      //   end: 3000,
-      //   zoomFactor: 2,
-      // },
-      {
-        id: 1,
-        start: 3000,
-        end: 7000,
-        zoomFactor: 2,
-      },
+      console.info("initalVideoTrack", initalVideoTrack);
 
-      {
-        id: 1,
-        start: 10000,
-        end: 13000,
-        zoomFactor: 2,
-      },
-    ];
+      dispatch({ key: "videoTrack", value: initalVideoTrack });
 
-    dispatch({ key: "zoomTracks", value: testZoomTracks });
-  }, []);
+      const testZoomTracks = [
+        // {
+        //   id: 1,
+        //   start: 1000,
+        //   end: 3000,
+        //   zoomFactor: 2,
+        // },
+        {
+          id: randomUUID(),
+          start: 5000,
+          end: 12000,
+          zoomFactor: 2,
+        },
+        {
+          id: randomUUID(),
+          start: 16000,
+          end: 25000,
+          zoomFactor: 2,
+        },
+      ];
+
+      dispatch({ key: "zoomTracks", value: testZoomTracks });
+    }
+  }, [originalDuration]);
+
+  const handleZoomTrackClick = (id) => {
+    dispatch({ key: "selectedTrack", value: id });
+  };
 
   return (
     <section className={styles.tracksContainer}>
@@ -75,7 +74,11 @@ const Tracks: React.FC<TracksProps> = ({
         </div>
         <div className={`${styles.track} ${styles.videoTrack}`}>
           <div className={styles.trackInner}>
-            <div className={styles.item} style={{ left: 0 }}></div>
+            <div
+              className={styles.item}
+              style={{ left: 0 }}
+              onClick={() => handleZoomTrackClick(videoTrack.id)}
+            ></div>
           </div>
         </div>
         <div className={`${styles.track} ${styles.zoomTrack}`}>
@@ -90,6 +93,7 @@ const Tracks: React.FC<TracksProps> = ({
                   key={id}
                   className={styles.item}
                   style={{ left: `${left}%`, width: `${width}%` }}
+                  onClick={() => handleZoomTrackClick(id)}
                 ></div>
               );
             })}

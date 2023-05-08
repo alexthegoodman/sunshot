@@ -5,16 +5,14 @@ import React, { useEffect, useReducer } from "react";
 
 import styles from "./editor.module.scss";
 import Tracks from "../components/Tracks/Tracks";
-import Preview from "../components/Preview/Preview";
 import {
   EditorContext,
   EditorContextReducer,
   EditorContextState,
 } from "../context/EditorContext/EditorContext";
 import EditorCtrls from "../components/EditorCtrls/EditorCtrls";
-import PreviewCanvas from "../components/PreviewCanvas/PreviewCanvas";
-import FabricCanvas from "../components/FabricCanvas/FabricCanvas";
 import KonvaCanvas from "../components/KonvaCanvas/KonvaCanvas";
+import Properties from "../components/Properties/Properties";
 
 function Editor() {
   const [positions, setPositions] = React.useState(null);
@@ -26,7 +24,6 @@ function Editor() {
   useEffect(() => {
     const { mousePositions, originalCapture, sourceData } =
       ipcRenderer.sendSync("get-project-data");
-    console.info("project data", mousePositions);
 
     // do not repeat save mouse positions or original capture
     // in the saved context data
@@ -35,11 +32,18 @@ function Editor() {
 
     const duration = mousePositions[mousePositions.length - 1].timestamp; // may be off by up to 100ms
 
+    console.info(
+      "project data",
+      mousePositions,
+      JSON.parse(sourceData),
+      duration
+    );
+
     setPositions(mousePositions);
     setOriginalCapture(originalCapture);
     // setOriginalCapture25(originalCapture25);
     setOriginalDuration(duration);
-    setSourceData(sourceData);
+    setSourceData(JSON.parse(sourceData));
   }, []);
 
   return (
@@ -58,19 +62,6 @@ function Editor() {
                 // originalCapture={originalCapture}
                 originalDuration={originalDuration}
               />
-              {/* <Preview
-                positions={positions}
-                originalCapture={originalCapture}
-              /> */}
-              {/* <PreviewCanvas
-                positions={positions}
-                originalCapture={originalCapture}
-              /> */}
-              {/* <FabricCanvas
-                positions={positions}
-                originalCapture={originalCapture}
-                originalCapture25={originalCapture25}
-              /> */}
               <KonvaCanvas
                 positions={positions}
                 originalCapture={originalCapture}
@@ -83,7 +74,7 @@ function Editor() {
               />
             </section>
             <aside className={styles.sidePanel}>
-              <>Properties</>
+              <Properties />
             </aside>
           </div>
         </section>
