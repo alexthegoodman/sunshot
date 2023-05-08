@@ -16,6 +16,8 @@ Clone these repos next to eachother.
 
 ### Install Dependencies
 
+May need to install GTK 2: https://github.com/Automattic/node-canvas/wiki/Installation:-Windows
+
 ```
 `choco install ffmpeg`
 `volta install node@16.16.0`
@@ -33,3 +35,12 @@ Clone these repos next to eachother.
 # production build
 `npm run build`
 ```
+
+### Notes
+
+If you need any assistance with setup, feel free to add an Issue or email: alexthegoodman@gmail.com
+
+Building `canvas`
+- https://github.com/nodejs/nan/issues/892
+- https://github.com/Automattic/node-canvas/issues/1589
+- https://github.com/Automattic/node-canvas/issues/923

@@ -20,6 +20,7 @@
   "dependencies": {
     "@electron/remote": "^2.0.9",
     "@next/font": "^13.3.1",
+    "canvas": "github:Automattic/node-canvas#napi",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.1.0",
     "ffmpeg-static": "^5.1.0",

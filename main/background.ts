@@ -46,7 +46,7 @@ let currentProjectId = null;
     height: 335,
   });
 
-  mainWindow.setMenu(null);
+  // mainWindow.setMenu(null);
   // mainWindow.setResizable(false);
 
   if (isProd) {
@@ -66,8 +66,6 @@ app.on("window-all-closed", () => {
 // });
 
 ipcMain.on("open-editor", async (event, { projectId }) => {
-  currentProjectId = projectId;
-
   editorWindow = createWindow("editor", {
     width: 1440,
     height: 1024,
@@ -91,26 +89,36 @@ ipcMain.on("close-source-picker", (event, arg) => {
 
 ipcMain.on("create-project", (event, arg) => {
   console.info("create-project", arg);
-  const projectId = randomUUID();
+  currentProjectId = randomUUID();
 
-  fs.mkdirSync(__dirname + `/projects/${projectId}`, {
+  fs.mkdirSync(__dirname + `/projects/${currentProjectId}`, {
     recursive: true,
   });
 
-  event.returnValue = { projectId };
+  event.returnValue = { projectId: currentProjectId };
 });
 
 ipcMain.on("get-sources", (event, arg) => {
   // TODO: error handling
-
-  console.log(print("test"));
-  console.info(setTargetWindow())
 
   desktopCapturer
     .getSources({ types: ["screen", "window"] })
     .then((sources) => {
       event.returnValue = sources;
     });
+});
+
+ipcMain.on("save-source-data", (event, { windowTitle }) => {
+  // TODO: error handling
+
+  const sourceData = setTargetWindow(windowTitle);
+
+  fs.writeFileSync(
+    __dirname + `/projects/${currentProjectId}/sourceData.json`,
+    JSON.stringify(sourceData)
+  );
+
+  event.returnValue = sourceData;
 });
 
 let captureInterval = null;
@@ -155,26 +163,28 @@ ipcMain.on("save-video-blob", (event, { projectId, buffer, sourceId }) => {
   fs.writeFileSync(
     __dirname + `/projects/${projectId}/originalCapture.webm`,
     buffer
-  );
+  )
 
-  // use ffmpeg to size down 1/4th
-  const inputVideoPath = path.join(
-    __dirname,
-    `/projects/${projectId}/originalCapture.webm`
-  );
-  const outputVideoPath = path.join(
-    __dirname,
-    `/projects/${projectId}/originalCapture25.webm`
-  );
+  event.returnValue = true;
 
-  // resize with fluent-ffmpeg
-  ffmpeg(inputVideoPath)
-    .outputOptions(["-vf scale=iw/4:ih/4"])
-    .save(outputVideoPath)
-    .on("end", () => {
-      console.log("resized video");
-      event.returnValue = true;
-    });
+  // // use ffmpeg to size down 1/4th
+  // const inputVideoPath = path.join(
+  //   __dirname,
+  //   `/projects/${projectId}/originalCapture.webm`
+  // );
+  // const outputVideoPath = path.join(
+  //   __dirname,
+  //   `/projects/${projectId}/originalCapture25.webm`
+  // );
+
+  // // resize with fluent-ffmpeg
+  // ffmpeg(inputVideoPath)
+  //   .outputOptions(["-vf scale=iw/4:ih/4"])
+  //   .save(outputVideoPath)
+  //   .on("end", () => {
+  //     console.log("resized video");
+  //     event.returnValue = true;
+  //   });
 });
 
 ipcMain.on("get-project-data", (event, args) => {
@@ -186,85 +196,93 @@ ipcMain.on("get-project-data", (event, args) => {
     ) as unknown as string
   );
 
+  const sourceData = JSON.parse(
+    fs.readFileSync(
+      __dirname + `/projects/${currentProjectId}/sourceData.json`
+    ) as unknown as string
+  );
+
   const originalCapture = fs.readFileSync(
     __dirname + `/projects/${currentProjectId}/originalCapture.webm`
   );
 
-  const originalCapture25 = fs.readFileSync(
-    __dirname + `/projects/${currentProjectId}/originalCapture25.webm`
-  );
+  // const originalCapture25 = fs.readFileSync(
+  //   __dirname + `/projects/${currentProjectId}/originalCapture25.webm`
+  // );
 
   event.returnValue = {
     mousePositions,
     originalCapture,
-    originalCapture25,
+    sourceData
+    // originalCapture25,
   };
 });
 
-ipcMain.on("get-transformed-video", (event, { zoomTracks }) => {
-  console.info("get-transformed-video", currentProjectId, zoomTracks);
+// unused ffmpeg implementation
+// ipcMain.on("get-transformed-video", (event, { zoomTracks }) => {
+//   console.info("get-transformed-video", currentProjectId, zoomTracks);
 
-  // const mousePositions = JSON.parse(
-  //   fs.readFileSync(
-  //     __dirname + `/projects/${currentProjectId}/mousePositions.json`
-  //   ) as unknown as string
-  // );
+//   // const mousePositions = JSON.parse(
+//   //   fs.readFileSync(
+//   //     __dirname + `/projects/${currentProjectId}/mousePositions.json`
+//   //   ) as unknown as string
+//   // );
 
-  // const originalCapture = fs.readFileSync(
-  //   __dirname + `/projects/${currentProjectId}/originalCapture.webm`
-  // );
+//   // const originalCapture = fs.readFileSync(
+//   //   __dirname + `/projects/${currentProjectId}/originalCapture.webm`
+//   // );
 
-  const inputVideoPath = path.join(
-    __dirname,
-    `/projects/${currentProjectId}/originalCapture.webm`
-  );
-  const outputVideoPath = path.join(
-    __dirname,
-    `/projects/${currentProjectId}/transformedCapture.webm`
-  );
+//   const inputVideoPath = path.join(
+//     __dirname,
+//     `/projects/${currentProjectId}/originalCapture.webm`
+//   );
+//   const outputVideoPath = path.join(
+//     __dirname,
+//     `/projects/${currentProjectId}/transformedCapture.webm`
+//   );
 
-  // Define the cubic-bezier control points
-  const easing = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+//   // Define the cubic-bezier control points
+//   const easing = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
 
-  const gradientStops = [
-    { color: "#000000", position: 0 },
-    { color: "#FFFFFF", position: 1 },
-  ];
+//   const gradientStops = [
+//     { color: "#000000", position: 0 },
+//     { color: "#FFFFFF", position: 1 },
+//   ];
 
-  // Apply zoom and pan effect with cubic-bezier easing
-  ffmpeg(inputVideoPath)
-    .videoCodec("libvpx-vp9")
-    .noAudio()
-    .complexFilter([
-      // `[0:v]zoompan=z='if(lte(zoom,1.0),1.5,max(1.001,zoom-0.0015))':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=100`,
-      // `zoompan=z='min(zoom+0.0015,1.5)':d=700:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=100`,
-      // `zoompan=z=pzoom+0.01:x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1280x720:fps=30`,
-      // Add a gradient background
-      `[0:v]drawbox=c=gradient:w=iw:h=ih:t=0.5:s=${gradientStops
-        .map((s) => `${s.color}@${s.position}`)
-        .join(":")}[bg]`,
-      // Apply zoom and pan effect with easing
-      // `[bg]zoompan=z=pzoom+0.01:x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1280x720:fps=30[zoomed]`,
-      // // Overlay the zoomed video onto the gradient background
-      // `[zoomed][bg]overlay=(W-w)/2:(H-h)/2`,
-    ])
-    .output(outputVideoPath)
-    .on("start", (commandLine) => {
-      console.log("Started FFMpeg with command:", commandLine);
-    })
-    .on("progress", (progress) => {
-      console.log("Processing: " + JSON.stringify(progress));
-    })
-    .on("end", () => {
-      console.log("Finished processing the video");
-    })
-    .on("error", (error) => {
-      console.error(
-        "An error occurred while processing the video:",
-        error.message
-      );
-    })
-    .run();
+//   // Apply zoom and pan effect with cubic-bezier easing
+//   ffmpeg(inputVideoPath)
+//     .videoCodec("libvpx-vp9")
+//     .noAudio()
+//     .complexFilter([
+//       // `[0:v]zoompan=z='if(lte(zoom,1.0),1.5,max(1.001,zoom-0.0015))':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=100`,
+//       // `zoompan=z='min(zoom+0.0015,1.5)':d=700:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=100`,
+//       // `zoompan=z=pzoom+0.01:x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1280x720:fps=30`,
+//       // Add a gradient background
+//       `[0:v]drawbox=c=gradient:w=iw:h=ih:t=0.5:s=${gradientStops
+//         .map((s) => `${s.color}@${s.position}`)
+//         .join(":")}[bg]`,
+//       // Apply zoom and pan effect with easing
+//       // `[bg]zoompan=z=pzoom+0.01:x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1280x720:fps=30[zoomed]`,
+//       // // Overlay the zoomed video onto the gradient background
+//       // `[zoomed][bg]overlay=(W-w)/2:(H-h)/2`,
+//     ])
+//     .output(outputVideoPath)
+//     .on("start", (commandLine) => {
+//       console.log("Started FFMpeg with command:", commandLine);
+//     })
+//     .on("progress", (progress) => {
+//       console.log("Processing: " + JSON.stringify(progress));
+//     })
+//     .on("end", () => {
+//       console.log("Finished processing the video");
+//     })
+//     .on("error", (error) => {
+//       console.error(
+//         "An error occurred while processing the video:",
+//         error.message
+//       );
+//     })
+//     .run();
 
-  event.returnValue = {};
-});
+//   event.returnValue = {};
+// });

@@ -19,13 +19,14 @@ import KonvaCanvas from "../components/KonvaCanvas/KonvaCanvas";
 function Editor() {
   const [positions, setPositions] = React.useState(null);
   const [originalCapture, setOriginalCapture] = React.useState(null);
-  const [originalCapture25, setOriginalCapture25] = React.useState(null); // 25% of original capture
+  // const [originalCapture25, setOriginalCapture25] = React.useState(null); // 25% of original capture
   const [originalDuration, setOriginalDuration] = React.useState(null);
+  const [sourceData, setSourceData] = React.useState(null);
 
   useEffect(() => {
-    const { mousePositions, originalCapture, originalCapture25 } =
+    const { mousePositions, originalCapture, sourceData } =
       ipcRenderer.sendSync("get-project-data");
-    console.info("project data", mousePositions, originalCapture25);
+    console.info("project data", mousePositions);
 
     // do not repeat save mouse positions or original capture
     // in the saved context data
@@ -36,8 +37,9 @@ function Editor() {
 
     setPositions(mousePositions);
     setOriginalCapture(originalCapture);
-    setOriginalCapture25(originalCapture25);
+    // setOriginalCapture25(originalCapture25);
     setOriginalDuration(duration);
+    setSourceData(sourceData);
   }, []);
 
   return (
@@ -72,7 +74,8 @@ function Editor() {
               <KonvaCanvas
                 positions={positions}
                 originalCapture={originalCapture}
-                originalCapture25={originalCapture25}
+                sourceData={sourceData}
+                // originalCapture25={originalCapture25}
               />
               <Tracks
                 positions={positions}

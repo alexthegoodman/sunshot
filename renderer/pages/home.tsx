@@ -24,8 +24,12 @@ function Home() {
   };
 
   const startRecording = (sourceId) => {
+    const source = sources.find((source) => source.id === sourceId);
     const { projectId } = ipcRenderer.sendSync("create-project");
+    const sourceData = ipcRenderer.sendSync("save-source-data", { windowTitle: source.name });
     setProjectId(projectId);
+
+    console.info("project", projectId, sourceData);
 
     navigator.mediaDevices
       .getUserMedia({
@@ -73,22 +77,8 @@ function Home() {
           });
           console.info("save-video-blob");
 
-          // ipcRenderer.sendSync("close-source-picker");
-          // ipcRenderer.sendSync("open-editor", { projectId });
-
-          const url = URL.createObjectURL(blob);
-          const videoElement = document.createElement("video");
-          videoElement.src = url;
-          videoElement.controls = true;
-          videoElement.autoplay = true;
-          videoElement.onloadedmetadata = () => {
-            // successful retrieval of video dimensions
-            // what of monitor position?
-            console.info("video loaded", videoElement.videoWidth, videoElement.videoHeight);
-          };
-          // videoElement.width = 3840 / 4;
-          // videoElement.height = 2160 / 4;
-          document.body.appendChild(videoElement);
+          ipcRenderer.sendSync("close-source-picker");
+          ipcRenderer.sendSync("open-editor", { projectId });
         };
 
         const chunks = [];
