@@ -7,7 +7,7 @@ import { randomUUID } from "crypto";
 const { desktopCapturer } = require("electron");
 const path = require("path");
 
-const { print, setTargetWindow } = require('sunshot-recorder');
+const { print, setTargetWindow } = require("sunshot-recorder");
 
 // https://alexandercleasby.dev/blog/use-ffmpeg-electron
 const ffmpeg = require("fluent-ffmpeg");
@@ -163,7 +163,7 @@ ipcMain.on("save-video-blob", (event, { projectId, buffer, sourceId }) => {
   fs.writeFileSync(
     __dirname + `/projects/${projectId}/originalCapture.webm`,
     buffer
-  )
+  );
 
   event.returnValue = true;
 
@@ -185,6 +185,18 @@ ipcMain.on("save-video-blob", (event, { projectId, buffer, sourceId }) => {
   //     console.log("resized video");
   //     event.returnValue = true;
   //   });
+});
+
+ipcMain.on("save-transformed-blob", (event, { buffer }) => {
+  console.info("save-transformed-blob", event, buffer);
+
+  // save buffer to custom project file format
+  fs.writeFileSync(
+    __dirname + `/projects/${currentProjectId}/finalCapture.webm`,
+    buffer
+  );
+
+  event.returnValue = true;
 });
 
 ipcMain.on("get-project-data", (event, args) => {
@@ -211,9 +223,10 @@ ipcMain.on("get-project-data", (event, args) => {
   // );
 
   event.returnValue = {
+    currentProjectId,
     mousePositions,
     originalCapture,
-    sourceData
+    sourceData,
     // originalCapture25,
   };
 });

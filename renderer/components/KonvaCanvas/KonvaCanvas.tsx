@@ -9,11 +9,8 @@ import Konva from "konva";
 import useImage from "use-image";
 import { Image as ImageType } from "konva/lib/shapes/Image";
 import { useEditorContext } from "../../context/EditorContext/EditorContext";
+import { ipcRenderer } from "electron";
 
-const width25 = 3840 / 4;
-const height25 = 2160 / 4;
-const innerWidth = width25 * 0.8;
-const innerHeight = height25 * 0.8;
 let anim = null;
 let zoomInterval = null;
 
@@ -26,6 +23,9 @@ const Video = ({
   playing,
   stopped,
   setCurrentTime,
+  divider,
+  innerWidth,
+  innerHeight,
 }) => {
   // console.info("videeo", ref);
   const imageRef = React.useRef<ImageType>(null);
@@ -58,6 +58,13 @@ const Video = ({
       videoElement.removeEventListener("loadedmetadata", onload);
     };
   }, [videoElement]);
+
+  React.useEffect(() => {
+    setSize({
+      width: innerWidth,
+      height: innerHeight,
+    });
+  }, [innerWidth, innerHeight]);
 
   const zoomIn = (zoomFactor, zoomPoint) => {
     console.info("zoomIn", zoomFactor, zoomPoint);
@@ -116,10 +123,12 @@ const Video = ({
             const predictionOffset = 0;
             const zoomPoint = {
               x:
-                ((positions[point + predictionOffset].x - sourceData.x) / 4) *
+                ((positions[point + predictionOffset].x - sourceData.x) /
+                  divider) *
                 0.8,
               y:
-                ((positions[point + predictionOffset].y - sourceData.y) / 4) *
+                ((positions[point + predictionOffset].y - sourceData.y) /
+                  divider) *
                 0.8,
             };
 
@@ -180,6 +189,7 @@ const Video = ({
 const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   positions = null,
   originalCapture = null,
+  originalDuration = null,
   originalCapture25 = null,
   sourceData = null,
 }) => {
@@ -188,67 +198,98 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   const stageRef = React.useRef(null);
   const layerRef = React.useRef(null);
 
-  console.info("ref", stageRef, layerRef);
+  const [divider, setDivider] = React.useState(4);
+
+  const width25 = 3840 / divider;
+  const height25 = 2160 / divider;
+  const innerWidth = width25 * 0.8;
+  const innerHeight = height25 * 0.8;
+
+  // console.info("ref", stageRef, layerRef);
 
   const setCurrentTime = (time) => {
     dispatch({ key: "currentTime", value: time });
   };
 
+  const playVideo = () => {
+    dispatch({ key: "playing", value: true });
+    dispatch({ key: "stopped", value: false });
+  };
+
+  const stopVideo = () => {
+    dispatch({ key: "playing", value: false });
+    dispatch({ key: "stopped", value: true });
+  };
+
+  const exportVideo = () => {
+    setDivider(2);
+    setTimeout(() => {
+      recordCanvas();
+    }, 1000);
+  };
+
   // *** record canvas ***
-  // const recordCanvas = () => {
-  //   console.info("record canvas");
-  //   // var canvas = document.getElementById("myCanvas");
-  //   const canvas = layerRef.current.getNativeCanvasElement();
-  //   var ctx = canvas.getContext("2d");
+  const recordCanvas = () => {
+    console.info("record canvas");
 
-  //   // Set up MediaRecorder options
-  //   var mediaRecorderOptions = {
-  //     mimeType: "video/webm",
-  //     videoBitsPerSecond: 2500000, // adjust as needed
-  //   };
+    playVideo();
 
-  //   // Create a new MediaRecorder instance and start recording
-  //   var chunks = [];
-  //   var mediaRecorder = new MediaRecorder(
-  //     canvas.captureStream(),
-  //     mediaRecorderOptions
-  //   );
-  //   mediaRecorder.start();
+    const canvas = layerRef.current.getNativeCanvasElement();
+    var ctx = canvas.getContext("2d");
 
-  //   // Handle data available event
-  //   mediaRecorder.addEventListener("dataavailable", function (event) {
-  //     if (event.data.size > 0) {
-  //       chunks.push(event.data);
-  //     }
-  //   });
+    // Set up MediaRecorder options
+    var mediaRecorderOptions = {
+      mimeType: "video/webm",
+      videoBitsPerSecond: 2500000, // adjust as needed
+    };
 
-  //   // Stop recording and create a video blob
-  //   mediaRecorder.addEventListener("stop", function () {
-  //     var videoBlob = new Blob(chunks, { type: "video/webm" });
+    // Create a new MediaRecorder instance and start recording
+    var chunks = [];
+    var mediaRecorder = new MediaRecorder(
+      canvas.captureStream(),
+      mediaRecorderOptions
+    );
+    mediaRecorder.start();
 
-  //     const videoElement = document.getElementById(
-  //       "recordedCapture"
-  //     ) as HTMLVideoElement;
+    // Handle data available event
+    mediaRecorder.addEventListener("dataavailable", function (event) {
+      if (event.data.size > 0) {
+        chunks.push(event.data);
+      }
+    });
 
-  //     const url = URL.createObjectURL(videoBlob);
-  //     videoElement.src = url;
+    // Stop recording and create a video blob
+    mediaRecorder.addEventListener("stop", async function () {
+      const videoBlob = new Blob(chunks, { type: "video/webm" });
 
-  //     console.info("video", url);
+      // const videoElement = document.getElementById(
+      //   "recordedCapture"
+      // ) as HTMLVideoElement;
 
-  //     // Do something with the recorded video blob
-  //   });
+      // const url = URL.createObjectURL(videoBlob);
+      // videoElement.src = url;
 
-  //   // Stop recording after some time
-  //   setTimeout(function () {
-  //     mediaRecorder.stop();
-  //     console.info("video stop");
-  //   }, 5000);
-  // };
+      // console.info("video", url);
+
+      const arrayBuffer = await videoBlob.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      ipcRenderer.sendSync("save-transformed-blob", {
+        buffer,
+      });
+    });
+
+    // Stop recording after some time
+    setTimeout(function () {
+      mediaRecorder.stop();
+      console.info("video stop");
+    }, originalDuration);
+  };
 
   return (
     <>
       <section>
-        <button onClick={() => {}}>Export</button>
+        <button onClick={exportVideo}>Export</button>
       </section>
       <Stage id="stage" ref={stageRef} width={width25} height={height25}>
         <Layer ref={layerRef}>
@@ -289,19 +330,15 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
               playing={playing}
               stopped={stopped}
               setCurrentTime={setCurrentTime}
+              divider={divider}
+              innerWidth={innerWidth}
+              innerHeight={innerHeight}
             />
           </Group>
         </Layer>
       </Stage>
       <section>
-        <button
-          onClick={() => {
-            dispatch({ key: "playing", value: true });
-            dispatch({ key: "stopped", value: false });
-          }}
-        >
-          Play
-        </button>
+        <button onClick={playVideo}>Play</button>
         {/* <button
           onClick={() => {
             dispatch({ key: "playing", value: false });
@@ -310,14 +347,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
         >
           Pause
         </button> */}
-        <button
-          onClick={() => {
-            dispatch({ key: "playing", value: false });
-            dispatch({ key: "stopped", value: true });
-          }}
-        >
-          Stop
-        </button>
+        <button onClick={stopVideo}>Stop</button>
       </section>
       <video id="recordedCapture" autoPlay={true} loop={true}></video>
     </>

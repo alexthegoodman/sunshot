@@ -22,7 +22,7 @@ function Editor() {
   const [sourceData, setSourceData] = React.useState(null);
 
   useEffect(() => {
-    const { mousePositions, originalCapture, sourceData } =
+    const { currentProjectId, mousePositions, originalCapture, sourceData } =
       ipcRenderer.sendSync("get-project-data");
 
     // do not repeat save mouse positions or original capture
@@ -64,6 +64,7 @@ function Editor() {
               /> */}
               <KonvaCanvas
                 positions={positions}
+                originalDuration={originalDuration}
                 originalCapture={originalCapture}
                 sourceData={sourceData}
                 // originalCapture25={originalCapture25}
