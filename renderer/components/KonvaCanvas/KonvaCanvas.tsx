@@ -16,7 +16,15 @@ const innerWidth = width25 * 0.8;
 const innerHeight = height25 * 0.8;
 
 // https://stackoverflow.com/questions/59741398/play-video-on-canvas-in-react-konva
-const Video = ({ src, positions, zoomTracks, sourceData }) => {
+const Video = ({
+  src,
+  positions,
+  zoomTracks,
+  sourceData,
+  playing,
+  stopped,
+}) => {
+  // console.info("videeo", ref);
   const imageRef = React.useRef<ImageType>(null);
   const [size, setSize] = React.useState({ width: 50, height: 50 });
   const [zoomedIn, setZoomedIn] = React.useState(false);
@@ -80,7 +88,7 @@ const Video = ({ src, positions, zoomTracks, sourceData }) => {
   };
 
   // use Konva.Animation to redraw a layer
-  React.useEffect(() => {
+  const playCanvasVideo = () => {
     if (zoomTracks && videoElement) {
       // video to canvas animation required
       videoElement.play();
@@ -102,8 +110,12 @@ const Video = ({ src, positions, zoomTracks, sourceData }) => {
           if (Math.floor(timeElapsed) === Math.floor(track.start)) {
             const predictionOffset = 0;
             const zoomPoint = {
-              x: ((positions[point + predictionOffset].x - sourceData.x) / 4) * 0.8,
-              y: ((positions[point + predictionOffset].y - sourceData.y) / 4) * 0.8,
+              x:
+                ((positions[point + predictionOffset].x - sourceData.x) / 4) *
+                0.8,
+              y:
+                ((positions[point + predictionOffset].y - sourceData.y) / 4) *
+                0.8,
             };
 
             zoomIn(zoomFactor, zoomPoint);
@@ -126,7 +138,15 @@ const Video = ({ src, positions, zoomTracks, sourceData }) => {
         anim.stop();
       };
     }
-  }, [videoElement, zoomTracks]);
+  };
+
+  React.useEffect(() => {
+    if (playing) {
+      playCanvasVideo();
+    } else {
+      // stop anim and pause element
+    }
+  }, [playing, stopped]);
 
   return (
     <Image
@@ -148,7 +168,8 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   originalCapture25 = null,
   sourceData = null,
 }) => {
-  const [{ zoomTracks }, dispatch] = useEditorContext();
+  const [{ zoomTracks, currentTime, playing, stopped }, dispatch] =
+    useEditorContext();
   const stageRef = React.useRef(null);
   const layerRef = React.useRef(null);
 
@@ -205,13 +226,11 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   //   }, 5000);
   // };
 
-  // React.useEffect(() => {
-  //   recordCanvas();
-  // }, []);
-
   return (
     <>
-      {" "}
+      <section>
+        <button onClick={() => {}}>Export</button>
+      </section>
       <Stage id="stage" ref={stageRef} width={width25} height={height25}>
         <Layer ref={layerRef}>
           <Rect
@@ -247,10 +266,38 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
               zoomTracks={zoomTracks}
               positions={positions}
               sourceData={sourceData}
+              playing={playing}
+              stopped={stopped}
             />
           </Group>
         </Layer>
       </Stage>
+      <section>
+        <button
+          onClick={() => {
+            dispatch({ key: "playing", value: true });
+            dispatch({ key: "stopped", value: false });
+          }}
+        >
+          Play
+        </button>
+        <button
+          onClick={() => {
+            dispatch({ key: "playing", value: false });
+            dispatch({ key: "stopped", value: false });
+          }}
+        >
+          Pause
+        </button>
+        <button
+          onClick={() => {
+            dispatch({ key: "playing", value: false });
+            dispatch({ key: "stopped", value: true });
+          }}
+        >
+          Stop
+        </button>
+      </section>
       <video id="recordedCapture" autoPlay={true} loop={true}></video>
     </>
   );

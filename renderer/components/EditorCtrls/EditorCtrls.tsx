@@ -20,8 +20,8 @@ const EditorCtrls: React.FC<EditorCtrlsProps> = ({
     <>
       <header className={styles.editorCtrls}>
         <div className={styles.editorCtrlsInner}>
-          <button className={styles.btn}>Open a Project</button>
-          <button className={styles.btn}>Save Project</button>
+          {/* <button className={styles.btn}>Open a Project</button>
+          <button className={styles.btn}>Save Project</button> */}
           <button
             className={styles.btn}
             onClick={() => {

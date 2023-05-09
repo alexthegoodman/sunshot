@@ -57,11 +57,11 @@ function Editor() {
         <section className={styles.editor}>
           <div className={styles.editorInner}>
             <section className={styles.mainPanel}>
-              <EditorCtrls
+              {/* <EditorCtrls
                 positions={positions}
                 // originalCapture={originalCapture}
                 originalDuration={originalDuration}
-              />
+              /> */}
               <KonvaCanvas
                 positions={positions}
                 originalCapture={originalCapture}
