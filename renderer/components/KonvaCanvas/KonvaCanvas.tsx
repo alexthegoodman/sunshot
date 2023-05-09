@@ -14,6 +14,8 @@ const width25 = 3840 / 4;
 const height25 = 2160 / 4;
 const innerWidth = width25 * 0.8;
 const innerHeight = height25 * 0.8;
+let anim = null;
+let zoomInterval = null;
 
 // https://stackoverflow.com/questions/59741398/play-video-on-canvas-in-react-konva
 const Video = ({
@@ -23,6 +25,7 @@ const Video = ({
   sourceData,
   playing,
   stopped,
+  setCurrentTime,
 }) => {
   // console.info("videeo", ref);
   const imageRef = React.useRef<ImageType>(null);
@@ -94,7 +97,7 @@ const Video = ({
       videoElement.play();
       const layer = imageRef.current.getLayer();
 
-      const anim = new Konva.Animation(() => {}, layer);
+      anim = new Konva.Animation(() => {}, layer);
       anim.start();
 
       // mouse follow animation
@@ -103,8 +106,10 @@ const Video = ({
       let point = 0;
       let timeElapsed = 0;
 
-      const zoomInterval = setInterval(() => {
+      zoomInterval = setInterval(() => {
         timeElapsed += refreshRate;
+
+        setCurrentTime(timeElapsed);
 
         zoomTracks.forEach((track) => {
           if (Math.floor(timeElapsed) === Math.floor(track.start)) {
@@ -145,6 +150,16 @@ const Video = ({
       playCanvasVideo();
     } else {
       // stop anim and pause element
+      if (anim && videoElement) {
+        anim.stop();
+        videoElement.pause();
+        clearInterval(zoomInterval);
+        zoomOut();
+
+        if (stopped) {
+          videoElement.currentTime = 0;
+        }
+      }
     }
   }, [playing, stopped]);
 
@@ -174,6 +189,10 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   const layerRef = React.useRef(null);
 
   console.info("ref", stageRef, layerRef);
+
+  const setCurrentTime = (time) => {
+    dispatch({ key: "currentTime", value: time });
+  };
 
   // *** record canvas ***
   // const recordCanvas = () => {
@@ -261,6 +280,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
               ctx.rect(0, 0, innerWidth, innerHeight);
             }}
           >
+            {/** useEditorContext is not available within <Stage /> */}
             <Video
               src={originalCapture}
               zoomTracks={zoomTracks}
@@ -268,6 +288,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
               sourceData={sourceData}
               playing={playing}
               stopped={stopped}
+              setCurrentTime={setCurrentTime}
             />
           </Group>
         </Layer>
@@ -281,14 +302,14 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
         >
           Play
         </button>
-        <button
+        {/* <button
           onClick={() => {
             dispatch({ key: "playing", value: false });
             dispatch({ key: "stopped", value: false });
           }}
         >
           Pause
-        </button>
+        </button> */}
         <button
           onClick={() => {
             dispatch({ key: "playing", value: false });
