@@ -22,6 +22,7 @@ const Video = ({
   sourceData,
   playing,
   stopped,
+  exporting,
   setCurrentTime,
   divider,
   innerWidth,
@@ -116,7 +117,9 @@ const Video = ({
       zoomInterval = setInterval(() => {
         timeElapsed += refreshRate;
 
-        setCurrentTime(timeElapsed);
+        if (!exporting) {
+          setCurrentTime(timeElapsed);
+        }
 
         zoomTracks.forEach((track) => {
           if (Math.floor(timeElapsed) === Math.floor(track.start)) {
@@ -160,9 +163,10 @@ const Video = ({
     } else {
       // stop anim and pause element
       if (anim && videoElement) {
-        anim.stop();
+        anim.stop(); // pause()?
         videoElement.pause();
         clearInterval(zoomInterval);
+        setCurrentTime(0);
         zoomOut();
 
         if (stopped) {
@@ -193,14 +197,14 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   originalCapture25 = null,
   sourceData = null,
 }) => {
-  const [{ zoomTracks, currentTime, playing, stopped }, dispatch] =
+  const [{ zoomTracks, currentTime, playing, stopped, exporting }, dispatch] =
     useEditorContext();
   const stageRef = React.useRef(null);
   const layerRef = React.useRef(null);
 
   const [divider, setDivider] = React.useState(4);
 
-  const width25 = 3840 / divider;
+  const width25 = 3840 / divider; // divider of 2 is HD, 1.5 is 2K, 1 is 4K // even 1.5 seems to get cut off
   const height25 = 2160 / divider;
   const innerWidth = width25 * 0.8;
   const innerHeight = height25 * 0.8;
@@ -214,14 +218,17 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   const playVideo = () => {
     dispatch({ key: "playing", value: true });
     dispatch({ key: "stopped", value: false });
+    // dispatch({ key: "exporting", value: false }); // would be run on recordCanvas
   };
 
   const stopVideo = () => {
     dispatch({ key: "playing", value: false });
     dispatch({ key: "stopped", value: true });
+    dispatch({ key: "exporting", value: false });
   };
 
   const exportVideo = () => {
+    dispatch({ key: "exporting", value: true });
     setDivider(2);
     setTimeout(() => {
       recordCanvas();
@@ -235,12 +242,19 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
     playVideo();
 
     const canvas = layerRef.current.getNativeCanvasElement();
+    // const canvas = layerRef.current.canvas._canvas;
+    console.info(
+      "native canvas",
+      canvas,
+      layerRef.current.canvas._canvas,
+      canvas.captureStream()
+    );
     var ctx = canvas.getContext("2d");
 
     // Set up MediaRecorder options
     var mediaRecorderOptions = {
       mimeType: "video/webm",
-      videoBitsPerSecond: 2500000, // adjust as needed
+      // videoBitsPerSecond: 2500000, // adjust as needed
     };
 
     // Create a new MediaRecorder instance and start recording
@@ -249,11 +263,44 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
       canvas.captureStream(),
       mediaRecorderOptions
     );
+
+    mediaRecorder.addEventListener("start", function (event) {
+      console.info("recorder start", event);
+
+      // Stop recording after some time
+      setTimeout(function () {
+        mediaRecorder.stop();
+        // console.info("video stop");
+      }, originalDuration);
+    });
+
+    // mediaRecorder.addEventListener("pause", function (event) {
+    //   console.info("recorder pause", event);
+    // });
+
+    // mediaRecorder.addEventListener("resume", function (event) {
+    //   console.info("recorder resume", event);
+    // });
+
+    // mediaRecorder.addEventListener("error", function (event) {
+    //   console.info("recorder error", event);
+    // });
+
+    // mediaRecorder.addEventListener("warning", function (event) {
+    //   console.info("recorder warning", event);
+    // });
+
+    mediaRecorder.addEventListener("stop", function (event) {
+      console.info("recorder stop", event);
+    });
+
     mediaRecorder.start();
 
     // Handle data available event
     mediaRecorder.addEventListener("dataavailable", function (event) {
+      console.info("dataavailable", event, event.data);
       if (event.data.size > 0) {
+        console.info("push chunk");
         chunks.push(event.data);
       }
     });
@@ -269,21 +316,21 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
       // const url = URL.createObjectURL(videoBlob);
       // videoElement.src = url;
 
-      // console.info("video", url);
+      // console.info("video", chunks, videoBlob, url);
 
       const arrayBuffer = await videoBlob.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
+
+      console.info(
+        "save-transformed-blob",
+        arrayBuffer.byteLength,
+        buffer.length
+      );
 
       ipcRenderer.sendSync("save-transformed-blob", {
         buffer,
       });
     });
-
-    // Stop recording after some time
-    setTimeout(function () {
-      mediaRecorder.stop();
-      // console.info("video stop");
-    }, originalDuration);
   };
 
   return (
@@ -291,52 +338,62 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
       <section>
         <button onClick={exportVideo}>Export</button>
       </section>
-      <Stage id="stage" ref={stageRef} width={width25} height={height25}>
-        <Layer ref={layerRef}>
-          <Rect
-            width={width25}
-            height={height25}
-            fillRadialGradientStartPoint={{ x: 0, y: 0 }}
-            fillRadialGradientStartRadius={0}
-            fillRadialGradientEndPoint={{ x: 0, y: 0 }}
-            fillRadialGradientEndRadius={3840 / 2}
-            fillRadialGradientColorStops={[0, "red", 0.5, "yellow", 1, "blue"]}
-          ></Rect>
-          <Rect
-            x={width25 / 2 - innerWidth / 2}
-            y={height25 / 2 - innerHeight / 2}
-            width={innerWidth}
-            height={innerHeight}
-            fill="black"
-            cornerRadius={10}
-            shadowColor="black"
-            shadowBlur={10}
-            shadowOffset={{ x: 10, y: 10 }}
-            shadowOpacity={0.5}
-          ></Rect>
-          <Group
-            x={width25 / 2 - innerWidth / 2}
-            y={height25 / 2 - innerHeight / 2}
-            clipFunc={(ctx) => {
-              ctx.rect(0, 0, innerWidth, innerHeight);
-            }}
-          >
-            {/** useEditorContext is not available within <Stage /> */}
-            <Video
-              src={originalCapture}
-              zoomTracks={zoomTracks}
-              positions={positions}
-              sourceData={sourceData}
-              playing={playing}
-              stopped={stopped}
-              setCurrentTime={setCurrentTime}
-              divider={divider}
-              innerWidth={innerWidth}
-              innerHeight={innerHeight}
-            />
-          </Group>
-        </Layer>
-      </Stage>
+      <section style={exporting ? {} : {}}>
+        <Stage id="stage" ref={stageRef} width={width25} height={height25}>
+          <Layer ref={layerRef}>
+            <Rect
+              width={width25}
+              height={height25}
+              fillRadialGradientStartPoint={{ x: 0, y: 0 }}
+              fillRadialGradientStartRadius={0}
+              fillRadialGradientEndPoint={{ x: 0, y: 0 }}
+              fillRadialGradientEndRadius={3840 / 2}
+              fillRadialGradientColorStops={[
+                0,
+                "red",
+                0.5,
+                "yellow",
+                1,
+                "blue",
+              ]}
+            ></Rect>
+            <Rect
+              x={width25 / 2 - innerWidth / 2}
+              y={height25 / 2 - innerHeight / 2}
+              width={innerWidth}
+              height={innerHeight}
+              fill="black"
+              cornerRadius={10}
+              shadowColor="black"
+              shadowBlur={10}
+              shadowOffset={{ x: 10, y: 10 }}
+              shadowOpacity={0.5}
+            ></Rect>
+            <Group
+              x={width25 / 2 - innerWidth / 2}
+              y={height25 / 2 - innerHeight / 2}
+              clipFunc={(ctx) => {
+                ctx.rect(0, 0, innerWidth, innerHeight);
+              }}
+            >
+              {/** useEditorContext is not available within <Stage /> */}
+              <Video
+                src={originalCapture}
+                zoomTracks={zoomTracks}
+                positions={positions}
+                sourceData={sourceData}
+                playing={playing}
+                stopped={stopped}
+                exporting={exporting}
+                setCurrentTime={setCurrentTime}
+                divider={divider}
+                innerWidth={innerWidth}
+                innerHeight={innerHeight}
+              />
+            </Group>
+          </Layer>
+        </Stage>
+      </section>
       <section>
         <button onClick={playVideo}>Play</button>
         {/* <button

@@ -34,6 +34,7 @@ function Editor() {
 
     console.info(
       "project data",
+      currentProjectId,
       mousePositions,
       JSON.parse(sourceData),
       duration
