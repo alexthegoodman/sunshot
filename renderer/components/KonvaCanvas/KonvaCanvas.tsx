@@ -67,7 +67,7 @@ const Video = ({
   }, [innerWidth, innerHeight]);
 
   const zoomIn = (zoomFactor, zoomPoint) => {
-    console.info("zoomIn", zoomFactor, zoomPoint);
+    // console.info("zoomIn", zoomFactor, zoomPoint);
     setZoomedIn(true);
 
     imageRef.current.to({
@@ -230,7 +230,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
 
   // *** record canvas ***
   const recordCanvas = () => {
-    console.info("record canvas");
+    // console.info("record canvas");
 
     playVideo();
 
@@ -282,7 +282,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
     // Stop recording after some time
     setTimeout(function () {
       mediaRecorder.stop();
-      console.info("video stop");
+      // console.info("video stop");
     }, originalDuration);
   };
 
