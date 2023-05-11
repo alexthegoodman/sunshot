@@ -13,6 +13,8 @@ import {
 import EditorCtrls from "../components/EditorCtrls/EditorCtrls";
 import KonvaCanvas from "../components/KonvaCanvas/KonvaCanvas";
 import Properties from "../components/Properties/Properties";
+import NoSSR from "../components/NoSSR/NoSSR";
+import Script from "next/script";
 
 function Editor() {
   const [positions, setPositions] = React.useState(null);
@@ -63,7 +65,7 @@ function Editor() {
                 // originalCapture={originalCapture}
                 originalDuration={originalDuration}
               /> */}
-              <KonvaCanvas
+              <NoSSR
                 positions={positions}
                 originalDuration={originalDuration}
                 originalCapture={originalCapture}
@@ -81,6 +83,7 @@ function Editor() {
           </div>
         </section>
       </EditorContext.Provider>
+      <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     </React.Fragment>
   );
 }

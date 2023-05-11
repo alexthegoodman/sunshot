@@ -3,11 +3,13 @@ import serve from "electron-serve";
 import { createWindow } from "./helpers";
 import * as fs from "fs";
 import { randomUUID } from "crypto";
+import Konva from "konva";
 
 const { desktopCapturer } = require("electron");
 const path = require("path");
 
 const { print, setTargetWindow } = require("sunshot-recorder");
+const { spawn } = require("child_process");
 
 // https://alexandercleasby.dev/blog/use-ffmpeg-electron
 const ffmpeg = require("fluent-ffmpeg");
@@ -187,16 +189,91 @@ ipcMain.on("save-video-blob", (event, { projectId, buffer, sourceId }) => {
   //   });
 });
 
+let blobsSaved = 0;
+
 ipcMain.on("save-transformed-blob", (event, { buffer }) => {
   console.info("save-transformed-blob", event, buffer);
 
   // save buffer to custom project file format
   fs.writeFileSync(
-    __dirname + `/projects/${currentProjectId}/finalCapture.webm`,
+    __dirname +
+      `/projects/${currentProjectId}/transformedBlob${blobsSaved}.webm`,
     buffer
   );
 
+  blobsSaved++;
+
   event.returnValue = true;
+});
+
+ipcMain.on("combine-blobs", (event, args) => {
+  console.info("combine-blobs");
+
+  const videoFiles = new Array(blobsSaved + 1).fill(0).map((_, i) => {
+    return __dirname + `/projects/${currentProjectId}/transformedBlob${i}.webm`;
+  });
+
+  console.info("videoFiles", videoFiles);
+
+  const outputPath = __dirname + `/projects/${currentProjectId}/output.webm`;
+
+  // Create a new FFmpeg process
+  const ffmpeg = spawn("ffmpeg", [
+    "-f",
+    "concat",
+    "-i",
+    "concat:" + videoFiles.join("|"), // requires input.txt file
+    "-c",
+    "copy",
+    outputPath,
+  ]);
+
+  console.info("ffmpeg", ffmpeg);
+
+  // print progress
+  // ffmpeg.stderr.on("data", (data) => {
+  //   console.log(data.toString());
+  // });
+
+  // Wait for the FFmpeg process to finish
+  ffmpeg.on("exit", (code) => {
+    if (code === 0) {
+      console.log("Concatenation successful!");
+    } else {
+      console.log("Concatenation failed!");
+    }
+  });
+
+  // const command = ffmpeg();
+
+  // // Loop through the video file paths and add them to the command as inputs
+  // videoFiles.forEach((file) => {
+  //   command.input(file);
+  // });
+
+  // // Set the output file path and format
+  // const outputPath = __dirname + `/projects/${currentProjectId}/output.webm`;
+  // // command.output(outputPath);
+
+  // // Run the command to concatenate the videos
+  // command
+  //   .concat()
+  //   .output(outputPath)
+  //   .on("start", () => {
+  //     console.log("FFmpeg processing started");
+  //   })
+  //   .on("progress", (progress) => {
+  //     console.log(`Processing: ${progress}% done`);
+  //   })
+  //   .on("end", () => {
+  //     console.log("FFmpeg processing finished");
+  //     event.returnValue = true;
+  //   })
+  //   .on("error", (error) => {
+  //     console.error("FFmpeg processing error:", error.message);
+  //     event.returnValue = true;
+  //   })
+  //   .run();
 });
 
 ipcMain.on("get-project-data", (event, args) => {
@@ -230,6 +307,54 @@ ipcMain.on("get-project-data", (event, args) => {
     // originalCapture25,
   };
 });
+
+// ipcMain.on("export-video", (event, args) => {
+//   console.info("export-video", args);
+
+//   const mousePositions = JSON.parse(
+//     fs.readFileSync(
+//       __dirname + `/projects/${currentProjectId}/mousePositions.json`
+//     ) as unknown as string
+//   );
+
+//   const sourceData = JSON.parse(
+//     fs.readFileSync(
+//       __dirname + `/projects/${currentProjectId}/sourceData.json`
+//     ) as unknown as string
+//   );
+
+//   const originalCapture = fs.readFileSync(
+//     __dirname + `/projects/${currentProjectId}/originalCapture.webm`
+//   );
+
+//   const divider = 1;
+//   const width25 = 3840 / divider;
+//   const height25 = 2160 / divider;
+//   const innerWidth = width25 * 0.8;
+//   const innerHeight = height25 * 0.8;
+
+//   // create Konva canvas similar to editor
+//   const stage = new Konva.Stage({
+//     container: null,
+//     width: width25,
+//     height: height25,
+//   });
+
+//   const layer = new Konva.Layer();
+
+//   // TODO: how?
+//   var imageObj = new Image();
+//   imageObj.src =
+//     __dirname + `/projects/${currentProjectId}/originalCapture.webm`;
+
+//   const video = new Konva.Image({
+//     image: imageObj,
+//     width: innerWidth,
+//     height: innerHeight,
+//     x: (width25 - innerWidth) / 2,
+//     y: (height25 - innerHeight) / 2,
+//   });
+// });
 
 // unused ffmpeg implementation
 // ipcMain.on("get-transformed-video", (event, { zoomTracks }) => {

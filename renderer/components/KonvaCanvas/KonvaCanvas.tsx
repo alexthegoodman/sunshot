@@ -10,6 +10,10 @@ import useImage from "use-image";
 import { Image as ImageType } from "konva/lib/shapes/Image";
 import { useEditorContext } from "../../context/EditorContext/EditorContext";
 import { ipcRenderer } from "electron";
+import { CanvasRecorder } from "recordrtc";
+import html2canvas from "html2canvas";
+
+// import { MediaRecorder } from "extendable-media-recorder"; // Blob is not defined
 
 let anim = null;
 let zoomInterval = null;
@@ -235,103 +239,264 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
     }, 1000);
   };
 
+  // // *** record canvas ***
+  // const recordCanvas = () => {
+  //   // console.info("record canvas");
+
+  //   playVideo();
+
+  //   const canvas = layerRef.current.getNativeCanvasElement();
+  //   // const canvas = layerRef.current.canvas._canvas;
+  //   console.info(
+  //     "native canvas",
+  //     canvas,
+  //     layerRef.current.canvas._canvas,
+  //     canvas.captureStream()
+  //   );
+  //   var ctx = canvas.getContext("2d");
+
+  //   // Set up MediaRecorder options
+  //   var mediaRecorderOptions = {
+  //     mimeType: "video/webm",
+  //     // videoBitsPerSecond: 2500000, // adjust as needed
+  //   };
+
+  //   // Create a new MediaRecorder instance and start recording
+  //   var chunks = [];
+  //   var mediaRecorder = new MediaRecorder(
+  //     canvas.captureStream(),
+  //     mediaRecorderOptions
+  //   );
+
+  //   const chunkDuration = 5000;
+  //   let elapsed = 0;
+  //   let completed = false;
+
+  //   mediaRecorder.addEventListener("start", function (event) {
+  //     console.info("recorder start", event);
+
+  //     // Stop recording after some time
+  //     if (elapsed < originalDuration) {
+  //       setTimeout(function () {
+  //         elapsed += chunkDuration;
+  //         mediaRecorder.stop();
+  //         mediaRecorder.start();
+  //         // console.info("video stop");
+  //       }, chunkDuration);
+  //     } else {
+  //       setTimeout(function () {
+  //         completed = true;
+  //         mediaRecorder.stop();
+  //         console.info("completed");
+  //         // saveVideoBlob();
+  //         ipcRenderer.sendSync("combine-blobs");
+  //       }, elapsed - originalDuration);
+  //     }
+  //   });
+
+  //   mediaRecorder.addEventListener("pause", function (event) {
+  //     console.info("recorder pause", event);
+  //   });
+
+  //   // mediaRecorder.addEventListener("resume", function (event) {
+  //   //   console.info("recorder resume", event);
+  //   // });
+
+  //   // mediaRecorder.addEventListener("error", function (event) {
+  //   //   console.info("recorder error", event);
+  //   // });
+
+  //   // mediaRecorder.addEventListener("warning", function (event) {
+  //   //   console.info("recorder warning", event);
+  //   // });
+
+  //   mediaRecorder.addEventListener("stop", function (event) {
+  //     console.info("recorder stop", event);
+  //     // stream.getTracks().forEach(stream => stream.stop());
+  //   });
+
+  //   // Handle data available event
+  //   mediaRecorder.addEventListener("dataavailable", async function (event) {
+  //     // console.info("dataavailable", event, event.data);
+  //     if (event.data.size > 0) {
+  //       // console.info("push chunk");
+  //       const chunk = event.data;
+  //       // chunks.push(event.data);
+
+  //       const videoBlob = new Blob([chunk], { type: "video/webm" });
+
+  //       // const videoElement = document.getElementById(
+  //       //   "recordedCapture"
+  //       // ) as HTMLVideoElement;
+
+  //       // const url = URL.createObjectURL(videoBlob);
+  //       // videoElement.src = url;
+
+  //       // console.info("video", chunks, videoBlob, url);
+
+  //       const arrayBuffer = await videoBlob.arrayBuffer();
+  //       const buffer = Buffer.from(arrayBuffer);
+
+  //       console.info(
+  //         "save-transformed-blob",
+  //         arrayBuffer.byteLength,
+  //         buffer.length
+  //       );
+
+  //       ipcRenderer.sendSync("save-transformed-blob", {
+  //         buffer,
+  //       });
+  //     }
+  //   });
+
+  //   mediaRecorder.start();
+
+  //   // Stop recording and create a video blob
+  //   // mediaRecorder.addEventListener("stop", );
+  // };
+
   // *** record canvas ***
   const recordCanvas = () => {
     // console.info("record canvas");
 
-    playVideo();
-
     const canvas = layerRef.current.getNativeCanvasElement();
-    // const canvas = layerRef.current.canvas._canvas;
-    console.info(
-      "native canvas",
-      canvas,
-      layerRef.current.canvas._canvas,
-      canvas.captureStream()
-    );
-    var ctx = canvas.getContext("2d");
 
-    // Set up MediaRecorder options
-    var mediaRecorderOptions = {
-      mimeType: "video/webm",
-      // videoBitsPerSecond: 2500000, // adjust as needed
-    };
+    const chunkDuration = 5000;
+    let elapsed = 0;
+    let completed = false;
 
-    // Create a new MediaRecorder instance and start recording
-    var chunks = [];
-    var mediaRecorder = new MediaRecorder(
-      canvas.captureStream(),
-      mediaRecorderOptions
-    );
-
-    mediaRecorder.addEventListener("start", function (event) {
-      console.info("recorder start", event);
-
-      // Stop recording after some time
-      setTimeout(function () {
-        mediaRecorder.stop();
-        // console.info("video stop");
-      }, originalDuration);
-    });
-
-    // mediaRecorder.addEventListener("pause", function (event) {
-    //   console.info("recorder pause", event);
-    // });
-
-    // mediaRecorder.addEventListener("resume", function (event) {
-    //   console.info("recorder resume", event);
-    // });
-
-    // mediaRecorder.addEventListener("error", function (event) {
-    //   console.info("recorder error", event);
-    // });
-
-    // mediaRecorder.addEventListener("warning", function (event) {
-    //   console.info("recorder warning", event);
-    // });
-
-    mediaRecorder.addEventListener("stop", function (event) {
-      console.info("recorder stop", event);
-    });
-
-    mediaRecorder.start();
-
-    // Handle data available event
-    mediaRecorder.addEventListener("dataavailable", function (event) {
-      console.info("dataavailable", event, event.data);
-      if (event.data.size > 0) {
-        console.info("push chunk");
-        chunks.push(event.data);
+    const recordInterval = setInterval(() => {
+      if (elapsed === 0) {
+        playVideo();
       }
-    });
 
-    // Stop recording and create a video blob
-    mediaRecorder.addEventListener("stop", async function () {
-      const videoBlob = new Blob(chunks, { type: "video/webm" });
+      // Set up MediaRecorder options
+      var mediaRecorderOptions = {
+        mimeType: "video/webm",
+        // videoBitsPerSecond: 2500000, // adjust as needed
+      };
 
-      // const videoElement = document.getElementById(
-      //   "recordedCapture"
-      // ) as HTMLVideoElement;
-
-      // const url = URL.createObjectURL(videoBlob);
-      // videoElement.src = url;
-
-      // console.info("video", chunks, videoBlob, url);
-
-      const arrayBuffer = await videoBlob.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-
-      console.info(
-        "save-transformed-blob",
-        arrayBuffer.byteLength,
-        buffer.length
+      // Create a new MediaRecorder instance and start recording
+      var chunks = [];
+      var mediaRecorder = new MediaRecorder(
+        canvas.captureStream(),
+        mediaRecorderOptions
       );
 
-      ipcRenderer.sendSync("save-transformed-blob", {
-        buffer,
+      mediaRecorder.addEventListener("start", function (event) {
+        console.info("recorder start", event);
       });
-    });
+
+      mediaRecorder.addEventListener("pause", function (event) {
+        console.info("recorder pause", event);
+      });
+
+      // mediaRecorder.addEventListener("resume", function (event) {
+      //   console.info("recorder resume", event);
+      // });
+
+      // mediaRecorder.addEventListener("error", function (event) {
+      //   console.info("recorder error", event);
+      // });
+
+      // mediaRecorder.addEventListener("warning", function (event) {
+      //   console.info("recorder warning", event);
+      // });
+
+      mediaRecorder.addEventListener("stop", function (event) {
+        console.info("recorder stop", event);
+        // stream.getTracks().forEach(stream => stream.stop());
+      });
+
+      // Handle data available event
+      mediaRecorder.addEventListener("dataavailable", async function (event) {
+        // console.info("dataavailable", event, event.data);
+        if (event.data.size > 0) {
+          // console.info("push chunk");
+          const chunk = event.data;
+          // chunks.push(event.data);
+
+          const videoBlob = new Blob([chunk], { type: "video/webm" });
+
+          // const videoElement = document.getElementById(
+          //   "recordedCapture"
+          // ) as HTMLVideoElement;
+
+          // const url = URL.createObjectURL(videoBlob);
+          // videoElement.src = url;
+
+          // console.info("video", chunks, videoBlob, url);
+
+          const arrayBuffer = await videoBlob.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+
+          console.info(
+            "save-transformed-blob",
+            arrayBuffer.byteLength,
+            buffer.length
+          );
+
+          ipcRenderer.sendSync("save-transformed-blob", {
+            buffer,
+          });
+        }
+      });
+
+      mediaRecorder.start();
+
+      // Stop recording after some time
+      if (elapsed < originalDuration) {
+        setTimeout(function () {
+          elapsed += chunkDuration;
+          mediaRecorder.stop();
+        }, chunkDuration);
+      } else {
+        setTimeout(function () {
+          clearInterval(recordInterval);
+          completed = true;
+          mediaRecorder.stop();
+          console.info("completed");
+          // saveVideoBlob();
+          ipcRenderer.sendSync("combine-blobs");
+        }, elapsed - originalDuration);
+      }
+    }, chunkDuration);
   };
+
+  // generated a massive 500mb file
+  // const recordCanvas = () => {
+  //   console.info("record canvas", originalDuration);
+  //   playVideo();
+
+  //   const canvas = layerRef.current.getNativeCanvasElement();
+  //   var recorder = new CanvasRecorder(canvas, {
+  //     disableLogs: false,
+  //     useWhammyRecorder: true,
+  //   });
+  //   recorder.record();
+
+  //   setTimeout(() => {
+  //     console.info("stop recording");
+  //     recorder.stop(async function (blob) {
+  //       const url = URL.createObjectURL(blob);
+
+  //       console.info("final url", url);
+
+  //       const arrayBuffer = await blob.arrayBuffer();
+  //       const buffer = Buffer.from(arrayBuffer);
+
+  //       console.info(
+  //         "save-transformed-blob",
+  //         arrayBuffer.byteLength,
+  //         buffer.length
+  //       );
+
+  //       ipcRenderer.sendSync("save-transformed-blob", {
+  //         buffer,
+  //       });
+  //     });
+  //   }, originalDuration);
+  // };
 
   return (
     <>
