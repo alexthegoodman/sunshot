@@ -1,1 +1,19 @@
-/** Styles **/
+.projectCtrls {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.stageContainer {
+  display: flex;
+  justify-content: center;
+  background-color: lightgray;
+}
+
+.videoCtrls {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 15px;
+  padding: 15px 0;
+}

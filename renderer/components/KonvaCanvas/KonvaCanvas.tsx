@@ -239,122 +239,6 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
     }, 1000);
   };
 
-  // // *** record canvas ***
-  // const recordCanvas = () => {
-  //   // console.info("record canvas");
-
-  //   playVideo();
-
-  //   const canvas = layerRef.current.getNativeCanvasElement();
-  //   // const canvas = layerRef.current.canvas._canvas;
-  //   console.info(
-  //     "native canvas",
-  //     canvas,
-  //     layerRef.current.canvas._canvas,
-  //     canvas.captureStream()
-  //   );
-  //   var ctx = canvas.getContext("2d");
-
-  //   // Set up MediaRecorder options
-  //   var mediaRecorderOptions = {
-  //     mimeType: "video/webm",
-  //     // videoBitsPerSecond: 2500000, // adjust as needed
-  //   };
-
-  //   // Create a new MediaRecorder instance and start recording
-  //   var chunks = [];
-  //   var mediaRecorder = new MediaRecorder(
-  //     canvas.captureStream(),
-  //     mediaRecorderOptions
-  //   );
-
-  //   const chunkDuration = 5000;
-  //   let elapsed = 0;
-  //   let completed = false;
-
-  //   mediaRecorder.addEventListener("start", function (event) {
-  //     console.info("recorder start", event);
-
-  //     // Stop recording after some time
-  //     if (elapsed < originalDuration) {
-  //       setTimeout(function () {
-  //         elapsed += chunkDuration;
-  //         mediaRecorder.stop();
-  //         mediaRecorder.start();
-  //         // console.info("video stop");
-  //       }, chunkDuration);
-  //     } else {
-  //       setTimeout(function () {
-  //         completed = true;
-  //         mediaRecorder.stop();
-  //         console.info("completed");
-  //         // saveVideoBlob();
-  //         ipcRenderer.sendSync("combine-blobs");
-  //       }, elapsed - originalDuration);
-  //     }
-  //   });
-
-  //   mediaRecorder.addEventListener("pause", function (event) {
-  //     console.info("recorder pause", event);
-  //   });
-
-  //   // mediaRecorder.addEventListener("resume", function (event) {
-  //   //   console.info("recorder resume", event);
-  //   // });
-
-  //   // mediaRecorder.addEventListener("error", function (event) {
-  //   //   console.info("recorder error", event);
-  //   // });
-
-  //   // mediaRecorder.addEventListener("warning", function (event) {
-  //   //   console.info("recorder warning", event);
-  //   // });
-
-  //   mediaRecorder.addEventListener("stop", function (event) {
-  //     console.info("recorder stop", event);
-  //     // stream.getTracks().forEach(stream => stream.stop());
-  //   });
-
-  //   // Handle data available event
-  //   mediaRecorder.addEventListener("dataavailable", async function (event) {
-  //     // console.info("dataavailable", event, event.data);
-  //     if (event.data.size > 0) {
-  //       // console.info("push chunk");
-  //       const chunk = event.data;
-  //       // chunks.push(event.data);
-
-  //       const videoBlob = new Blob([chunk], { type: "video/webm" });
-
-  //       // const videoElement = document.getElementById(
-  //       //   "recordedCapture"
-  //       // ) as HTMLVideoElement;
-
-  //       // const url = URL.createObjectURL(videoBlob);
-  //       // videoElement.src = url;
-
-  //       // console.info("video", chunks, videoBlob, url);
-
-  //       const arrayBuffer = await videoBlob.arrayBuffer();
-  //       const buffer = Buffer.from(arrayBuffer);
-
-  //       console.info(
-  //         "save-transformed-blob",
-  //         arrayBuffer.byteLength,
-  //         buffer.length
-  //       );
-
-  //       ipcRenderer.sendSync("save-transformed-blob", {
-  //         buffer,
-  //       });
-  //     }
-  //   });
-
-  //   mediaRecorder.start();
-
-  //   // Stop recording and create a video blob
-  //   // mediaRecorder.addEventListener("stop", );
-  // };
-
   // *** record canvas ***
   const recordCanvas = () => {
     // console.info("record canvas");
@@ -463,47 +347,17 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
     }, chunkDuration);
   };
 
-  // generated a massive 500mb file
-  // const recordCanvas = () => {
-  //   console.info("record canvas", originalDuration);
-  //   playVideo();
-
-  //   const canvas = layerRef.current.getNativeCanvasElement();
-  //   var recorder = new CanvasRecorder(canvas, {
-  //     disableLogs: false,
-  //     useWhammyRecorder: true,
-  //   });
-  //   recorder.record();
-
-  //   setTimeout(() => {
-  //     console.info("stop recording");
-  //     recorder.stop(async function (blob) {
-  //       const url = URL.createObjectURL(blob);
-
-  //       console.info("final url", url);
-
-  //       const arrayBuffer = await blob.arrayBuffer();
-  //       const buffer = Buffer.from(arrayBuffer);
-
-  //       console.info(
-  //         "save-transformed-blob",
-  //         arrayBuffer.byteLength,
-  //         buffer.length
-  //       );
-
-  //       ipcRenderer.sendSync("save-transformed-blob", {
-  //         buffer,
-  //       });
-  //     });
-  //   }, originalDuration);
-  // };
-
   return (
     <>
-      <section>
-        <button onClick={exportVideo}>Export</button>
+      <section className={styles.projectCtrls}>
+        <button
+          className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM"
+          onClick={exportVideo}
+        >
+          Export
+        </button>
       </section>
-      <section style={exporting ? {} : {}}>
+      <section className={`${styles.stageContainer} ${exporting ? "" : ""}`}>
         <Stage id="stage" ref={stageRef} width={width25} height={height25}>
           <Layer ref={layerRef}>
             <Rect
@@ -559,8 +413,13 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
           </Layer>
         </Stage>
       </section>
-      <section>
-        <button onClick={playVideo}>Play</button>
+      <section className={styles.videoCtrls}>
+        <button
+          className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM"
+          onClick={playVideo}
+        >
+          Play
+        </button>
         {/* <button
           onClick={() => {
             dispatch({ key: "playing", value: false });
@@ -569,9 +428,14 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
         >
           Pause
         </button> */}
-        <button onClick={stopVideo}>Stop</button>
+        <button
+          className="spectrum-Button spectrum-Button--secondary spectrum-Button--sizeM"
+          onClick={stopVideo}
+        >
+          Stop
+        </button>
       </section>
-      <video id="recordedCapture" autoPlay={true} loop={true}></video>
+      {/* <video id="recordedCapture" autoPlay={true} loop={true}></video> */}
     </>
   );
 };

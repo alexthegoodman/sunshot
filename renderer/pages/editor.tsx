@@ -55,7 +55,7 @@ function Editor() {
         <title>SunShot = Editor</title>
       </Head>
       <EditorContext.Provider
-        value={useReducer(EditorContextReducer, EditorContextState)}
+        value={useReducer(EditorContextReducer, EditorContextState) as any}
       >
         <section className={styles.editor}>
           <div className={styles.editorInner}>
