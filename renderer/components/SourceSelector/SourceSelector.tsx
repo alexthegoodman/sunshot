@@ -32,7 +32,7 @@ const SourceSelector: React.FC<SourceSelectorProps> = ({
       <button
         className={`spectrum-ActionButton spectrum-ActionButton--sizeM spectrum-ActionButton--quiet ${
           open ? "is-selected" : ""
-        }`}
+        } ${styles.actionBtn}`}
         onClick={handleActionClick}
       >
         <span className={`spectrum-ActionButton-label ${styles.elipsis}`}>
