@@ -49,6 +49,14 @@ export default function Document() {
           rel="stylesheet"
           href="lib/@spectrum-css/actionbutton/dist/index-vars.css"
         />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/fieldlabel/dist/index-vars.css"
+        />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/textfield/dist/index-vars.css"
+        />
       </Head>
       <body style={{ margin: 0 }}>
         <Main />

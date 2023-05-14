@@ -18,6 +18,10 @@ function Home() {
 
   const loadSourcePreviews = () => {
     let sources = ipcRenderer.sendSync("get-sources");
+    sources = sources.filter(
+      (source) =>
+        source.name !== "Entire screen" && source.name !== "Entire Screen"
+    );
 
     setSources(sources);
 

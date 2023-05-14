@@ -4,6 +4,7 @@ import styles from "./Properties.module.scss";
 
 import { PropertiesProps } from "./Properties.d";
 import { useEditorContext } from "../../context/EditorContext/EditorContext";
+import NumberField from "../NumberField/NumberField";
 
 const Properties: React.FC<PropertiesProps> = () => {
   const [{ videoTrack, zoomTracks, selectedTrack }, dispatch] =
@@ -38,30 +39,24 @@ const Properties: React.FC<PropertiesProps> = () => {
             {trackKey === "videoTrack" ? "Video Properties" : "Zoom Properties"}
           </h1>
           <div>
-            <div>
-              <label htmlFor="trackDataStart">Start</label>
-              <input
-                id="trackDataStart"
-                type="number"
-                value={trackData.start}
-                onChange={(e) => {
-                  const start = parseInt(e.target.value);
-                  updateTrack(trackKey, "start", start);
-                }}
-              />
-            </div>
-            <div>
-              <label htmlFor="trackDataEnd">End</label>
-              <input
-                id="trackDataEnd"
-                type="number"
-                value={trackData.end}
-                onChange={(e) => {
-                  const end = parseInt(e.target.value);
-                  updateTrack(trackKey, "end", end);
-                }}
-              />
-            </div>
+            <NumberField
+              id="start"
+              label="Start"
+              value={trackData.start}
+              onChange={(e) => {
+                const start = parseInt(e.target.value);
+                updateTrack(trackKey, "start", start);
+              }}
+            />
+            <NumberField
+              id="end"
+              label="End"
+              value={trackData.end}
+              onChange={(e) => {
+                const end = parseInt(e.target.value);
+                updateTrack(trackKey, "end", end);
+              }}
+            />
           </div>
         </div>
       ) : (
