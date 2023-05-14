@@ -162,7 +162,7 @@ function Home() {
           <div className={styles.ctrls}>
             {isRecording ? (
               <button
-                className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM"
+                className="spectrum-Button spectrum-Button--fill spectrum-Button--negative spectrum-Button--sizeM"
                 onClick={handleStopRecording}
               >
                 <span className="spectrum-Button-label">Stop Recording</span>
