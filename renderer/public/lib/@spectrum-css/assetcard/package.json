@@ -1,0 +1,38 @@
+{
+  "name": "@spectrum-css/assetcard",
+  "version": "1.1.33",
+  "description": "The Spectrum CSS asset card component",
+  "license": "Apache-2.0",
+  "author": "Adobe",
+  "homepage": "https://opensource.adobe.com/spectrum-css/assetcard",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adobe/spectrum-css.git",
+    "directory": "components/assetcard"
+  },
+  "bugs": {
+    "url": "https://github.com/adobe/spectrum-css/issues"
+  },
+  "main": "dist/index-vars.css",
+  "scripts": {
+    "build": "gulp"
+  },
+  "peerDependencies": {
+    "@spectrum-css/checkbox": ">=3 <=6",
+    "@spectrum-css/icon": ">=3",
+    "@spectrum-css/typography": ">=4 <=5",
+    "@spectrum-css/vars": ">=9"
+  },
+  "devDependencies": {
+    "@spectrum-css/checkbox": "^6.0.29",
+    "@spectrum-css/component-builder": "^4.0.8",
+    "@spectrum-css/icon": "^3.0.42",
+    "@spectrum-css/typography": "^5.0.15",
+    "@spectrum-css/vars": "^9.0.5",
+    "gulp": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "f2f9c974f228fbcaaa83e3e80d0c55f7d1930bed"
+}

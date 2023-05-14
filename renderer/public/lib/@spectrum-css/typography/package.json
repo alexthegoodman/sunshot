@@ -1,0 +1,32 @@
+{
+  "name": "@spectrum-css/typography",
+  "version": "5.0.15",
+  "description": "The Spectrum CSS typography component",
+  "license": "Apache-2.0",
+  "author": "Adobe",
+  "homepage": "https://opensource.adobe.com/spectrum-css/typography",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adobe/spectrum-css.git",
+    "directory": "components/typography"
+  },
+  "bugs": {
+    "url": "https://github.com/adobe/spectrum-css/issues"
+  },
+  "main": "dist/index-vars.css",
+  "scripts": {
+    "build": "gulp"
+  },
+  "peerDependencies": {
+    "@spectrum-css/tokens": ">=9"
+  },
+  "devDependencies": {
+    "@spectrum-css/component-builder-simple": "^2.0.11",
+    "@spectrum-css/tokens": "^10.0.0",
+    "gulp": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "f2f9c974f228fbcaaa83e3e80d0c55f7d1930bed"
+}

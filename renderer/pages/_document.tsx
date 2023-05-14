@@ -2,167 +2,44 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html>
-      <Head />
+    <Html className="spectrum spectrum--medium spectrum--light">
+      <Head>
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/vars/dist/spectrum-global.css"
+        />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/vars/dist/spectrum-medium.css"
+        />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/vars/dist/spectrum-light.css"
+        />
+        <link rel="stylesheet" href="lib/@spectrum-css/tokens/dist/index.css" />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/page/dist/index-vars.css"
+        />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/button/dist/index-vars.css"
+        />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/typography/dist/index-vars.css"
+        />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/assetcard/dist/index-vars.css"
+        />
+      </Head>
       <body>
+        <button className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM">
+          <span className="spectrum-Button-label">Button</span>
+        </button>
         <Main />
         <NextScript />
-        <style>
-          {/** Reset */}
-          {`
-            *,
-            *:before,
-            *:after {
-              -moz-box-sizing: border-box;
-              -webkit-box-sizing: border-box;
-              box-sizing: border-box;
-            }
-            
-            html,
-            body,
-            div,
-            span,
-            applet,
-            object,
-            iframe,
-            h1,
-            h2,
-            h3,
-            h4,
-            h5,
-            h6,
-            p,
-            blockquote,
-            pre,
-            a,
-            abbr,
-            acronym,
-            address,
-            big,
-            cite,
-            code,
-            del,
-            dfn,
-            em,
-            img,
-            ins,
-            kbd,
-            q,
-            s,
-            samp,
-            small,
-            strike,
-            strong,
-            sub,
-            sup,
-            tt,
-            var,
-            b,
-            u,
-            i,
-            center,
-            fieldset,
-            form,
-            label,
-            legend,
-            table,
-            caption,
-            tbody,
-            tfoot,
-            thead,
-            tr,
-            th,
-            td,
-            article,
-            aside,
-            canvas,
-            details,
-            embed,
-            figure,
-            figcaption,
-            footer,
-            header,
-            hgroup,
-            menu,
-            nav,
-            output,
-            ruby,
-            section,
-            summary,
-            time,
-            mark,
-            audio,
-            video {
-              margin: 0;
-              padding: 0;
-              border: 0;
-              // font-size: 100%;
-              // font-weight: 300;
-              // font: inherit;
-              // vertical-align: baseline;
-            }
-            
-            dl,
-            dt,
-            dd,
-            ol,
-            ul,
-            li {
-              border: 0;
-              font-size: 100%;
-              font: inherit;
-              vertical-align: baseline;
-              margin: 0;
-              padding: 0;
-            }
-            
-            /* display-role for old browsers */
-            article,
-            aside,
-            details,
-            figcaption,
-            figure,
-            footer,
-            header,
-            hgroup,
-            menu,
-            nav,
-            section {
-              display: block;
-            }
-            
-            body {
-              line-height: 1;
-            }
-            
-            blockquote,
-            q {
-              quotes: none;
-            }
-            
-            blockquote:before,
-            blockquote:after,
-            q:before,
-            q:after {
-              content: "";
-              content: none;
-            }
-            
-            table {
-              border-collapse: collapse;
-              border-spacing: 0;
-            }
-            
-            a {
-              outline: 0;
-            }
-            
-            // button {
-            //   cursor: pointer !important;
-            // }
-            
-            `}
-        </style>
       </body>
     </Html>
   );
