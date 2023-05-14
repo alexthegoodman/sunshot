@@ -1,62 +1,69 @@
-@font-face {
-  font-family: "Assistant";
-  src: url("../public/fonts/Assistant-Regular.ttf");
-  // src: url('fonts/fira/eot/FiraSans-Regular.eot') format('embedded-opentype'),
-  //      url('fonts/fira/woff2/FiraSans-Regular.woff2') format('woff2'),
-  //      url('fonts/fira/woff/FiraSans-Regular.woff') format('woff'),
-  //      url('fonts/fira/woff2/FiraSans-Regular.ttf') format('truetype');
-  font-weight: 300;
-  font-style: normal;
-}
+// @font-face {
+//   font-family: "Assistant";
+//   src: url("../public/fonts/Assistant-Regular.ttf");
+//   // src: url('fonts/fira/eot/FiraSans-Regular.eot') format('embedded-opentype'),
+//   //      url('fonts/fira/woff2/FiraSans-Regular.woff2') format('woff2'),
+//   //      url('fonts/fira/woff/FiraSans-Regular.woff') format('woff'),
+//   //      url('fonts/fira/woff2/FiraSans-Regular.ttf') format('truetype');
+//   font-weight: 300;
+//   font-style: normal;
+// }
 
-@font-face {
-  font-family: "Assistant";
-  src: url("../public/fonts/Assistant-Light.ttf");
-  font-weight: 200;
-  font-style: normal;
-}
+// @font-face {
+//   font-family: "Assistant";
+//   src: url("../public/fonts/Assistant-Light.ttf");
+//   font-weight: 200;
+//   font-style: normal;
+// }
 
-@font-face {
-  font-family: "Assistant";
-  src: url("../public/fonts/Assistant-Medium.ttf");
-  font-weight: 400;
-  font-style: normal;
-}
+// @font-face {
+//   font-family: "Assistant";
+//   src: url("../public/fonts/Assistant-Medium.ttf");
+//   font-weight: 400;
+//   font-style: normal;
+// }
 
-@font-face {
-  font-family: "Assistant";
-  src: url("../public/fonts/Assistant-SemiBold.ttf");
-  font-weight: 500;
-  font-style: normal;
-}
+// @font-face {
+//   font-family: "Assistant";
+//   src: url("../public/fonts/Assistant-SemiBold.ttf");
+//   font-weight: 500;
+//   font-style: normal;
+// }
 
-@font-face {
-  font-family: "Assistant";
-  src: url("../public/fonts/Assistant-Bold.ttf");
-  font-weight: 500;
-  font-style: normal;
-}
+// @font-face {
+//   font-family: "Assistant";
+//   src: url("../public/fonts/Assistant-Bold.ttf");
+//   font-weight: 500;
+//   font-style: normal;
+// }
 
-.heading {
-  font-family: "Assistant", sans-serif;
-}
+// .heading {
+//   font-family: "Assistant", sans-serif;
+// }
 
-.copy {
-  font-family: "Assistant", sans-serif;
-}
+// .copy {
+//   font-family: "Assistant", sans-serif;
+// }
 
-.btn {
-  font-family: "Assistant", sans-serif;
-  font-weight: 500;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: 2px solid #000;
-  background: #fff;
-  color: #000;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  text-decoration: none;
+// .btn {
+//   font-family: "Assistant", sans-serif;
+//   font-weight: 500;
+//   font-size: 14px;
+//   text-transform: uppercase;
+//   letter-spacing: 1px;
+//   padding: 10px 20px;
+//   border-radius: 5px;
+//   border: 2px solid #000;
+//   background: #fff;
+//   color: #000;
+//   cursor: pointer;
+//   transition: all 0.2s ease-in-out;
+//   text-decoration: none;
+// }
+
+.elipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
 }

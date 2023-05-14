@@ -33,11 +33,24 @@ export default function Document() {
           rel="stylesheet"
           href="lib/@spectrum-css/assetcard/dist/index-vars.css"
         />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/popover/dist/index-vars.css"
+        />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/menu/dist/index-vars.css"
+        />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/actionmenu/dist/index-vars.css"
+        />
+        <link
+          rel="stylesheet"
+          href="lib/@spectrum-css/actionbutton/dist/index-vars.css"
+        />
       </Head>
       <body>
-        <button className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM">
-          <span className="spectrum-Button-label">Button</span>
-        </button>
         <Main />
         <NextScript />
       </body>

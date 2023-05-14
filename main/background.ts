@@ -48,7 +48,7 @@ let currentProjectId = null;
     height: 335,
   });
 
-  // mainWindow.setMenu(null);
+  mainWindow.setMenu(null);
   // mainWindow.setResizable(false);
 
   if (isProd) {

@@ -1,0 +1,36 @@
+{
+  "name": "@spectrum-css/menu",
+  "version": "4.0.32",
+  "description": "The Spectrum CSS menu component",
+  "license": "Apache-2.0",
+  "author": "Adobe",
+  "homepage": "https://opensource.adobe.com/spectrum-css/menu",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adobe/spectrum-css.git",
+    "directory": "components/menu"
+  },
+  "bugs": {
+    "url": "https://github.com/adobe/spectrum-css/issues"
+  },
+  "main": "dist/index-vars.css",
+  "scripts": {
+    "build": "gulp"
+  },
+  "peerDependencies": {
+    "@spectrum-css/divider": ">=1 <=2",
+    "@spectrum-css/icon": ">=3",
+    "@spectrum-css/vars": ">=9"
+  },
+  "devDependencies": {
+    "@spectrum-css/component-builder": "^4.0.8",
+    "@spectrum-css/divider": "^2.0.40",
+    "@spectrum-css/icon": "^3.0.42",
+    "@spectrum-css/vars": "^9.0.5",
+    "gulp": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "f2f9c974f228fbcaaa83e3e80d0c55f7d1930bed"
+}

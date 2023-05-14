@@ -4,6 +4,7 @@ import Link from "next/link";
 import electron from "electron";
 
 import styles from "./home.module.scss";
+import SourceSelector from "../components/SourceSelector/SourceSelector";
 
 const ipcRenderer = electron.ipcRenderer;
 let currentMediaRecorder = null;
@@ -26,7 +27,9 @@ function Home() {
   const startRecording = (sourceId) => {
     const source = sources.find((source) => source.id === sourceId);
     const { projectId } = ipcRenderer.sendSync("create-project");
-    const sourceData = ipcRenderer.sendSync("save-source-data", { windowTitle: source.name });
+    const sourceData = ipcRenderer.sendSync("save-source-data", {
+      windowTitle: source.name,
+    });
     setProjectId(projectId);
 
     console.info("project", projectId, sourceData);
@@ -50,10 +53,16 @@ function Home() {
         console.info("stream", stream);
 
         const streamSettings = stream.getVideoTracks()[0].getSettings();
-        const streamWidth = stream.getVideoTracks()[0].getSettings().width
-        const streamHeight = stream.getVideoTracks()[0].getSettings().height
+        const streamWidth = stream.getVideoTracks()[0].getSettings().width;
+        const streamHeight = stream.getVideoTracks()[0].getSettings().height;
 
-        console.info("stream settings", streamSettings, JSON.stringify(streamSettings), streamWidth, streamHeight);
+        console.info(
+          "stream settings",
+          streamSettings,
+          JSON.stringify(streamSettings),
+          streamWidth,
+          streamHeight
+        );
 
         const stopRecording = async () => {
           setIsRecording(false);
@@ -125,8 +134,7 @@ function Home() {
     startRecording(selectedSource);
   };
 
-  const handleSourceSelect = (event) => {
-    const sourceId = event.target.id.split("-")[1];
+  const handleSourceSelect = (sourceId) => {
     setSelectedSource(sourceId);
   };
 
@@ -137,40 +145,37 @@ function Home() {
       </Head>
       <main className={styles.main}>
         {/* {message} */}
-        <div className={styles.sources}>
-          <h1>Select Your Video Source</h1>
-          <ul className={styles.sourceGrid}>
-            {sources?.map((source) => (
-              <li
-                key={source.id}
-                id={`video-${source.id}`}
-                className={source.id === selectedSource ? styles.selected : ""}
-                onClick={handleSourceSelect}
-              >
-                {source.name}
-              </li>
-            ))}
-          </ul>
+        <div className="spectrum-Typography">
+          {/* <h1 className="spectrum-Heading spectrum-Heading--sizeL">
+            Select Your Video Source
+          </h1> */}
+          <SourceSelector
+            sources={sources}
+            selectedSource={selectedSource}
+            onSourceSelect={handleSourceSelect}
+          />
 
           <div className={styles.ctrls}>
             {isRecording ? (
-              <button className={styles.btn} onClick={handleStopRecording}>
-                Stop Recording
+              <button
+                className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM"
+                onClick={handleStopRecording}
+              >
+                <span className="spectrum-Button-label">Stop Recording</span>
               </button>
             ) : (
               <button
-                className={styles.btn}
+                className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM"
                 onClick={handleStartRecording}
                 disabled={selectedSource ? false : true}
               >
-                Start Recording
+                <span className="spectrum-Button-label">Start Recording</span>
               </button>
             )}
 
-            <button className={styles.btn} onClick={handleOpenProject}>
+            {/* <button className={styles.btn} onClick={handleOpenProject}>
               Open a Project
-            </button>
-            {/* <button onClick={handleOpenEditor}>Open Editor</button> */}
+            </button> */}
           </div>
         </div>
       </main>

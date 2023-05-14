@@ -20,6 +20,7 @@
   "dependencies": {
     "@electron/remote": "^2.0.9",
     "@next/font": "^13.3.1",
+    "@spectrum-css/actionmenu": "^4.0.29",
     "@spectrum-css/assetcard": "^1.1.33",
     "@spectrum-css/button": "^10.0.9",
     "@spectrum-css/page": "^5.0.26",
