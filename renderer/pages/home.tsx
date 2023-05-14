@@ -143,12 +143,16 @@ function Home() {
       <Head>
         <title>SunShot - Beautiful Screen Recordings</title>
       </Head>
-      <main className={styles.main}>
+      <main className={`${styles.main} spectrum-Typography`}>
         {/* {message} */}
-        <div className="spectrum-Typography">
-          {/* <h1 className="spectrum-Heading spectrum-Heading--sizeL">
-            Select Your Video Source
-          </h1> */}
+        <div className={styles.innerContent}>
+          <h1 className="spectrum-Heading spectrum-Heading--sizeL">
+            Get Started
+          </h1>
+          <p className="spectrum-Body spectrum-Body--sizeL">
+            SunShot is a screen recording tool that allows you to capture your
+            screen and mouse movements in a beautiful way.
+          </p>
           <SourceSelector
             sources={sources}
             selectedSource={selectedSource}

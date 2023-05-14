@@ -50,7 +50,7 @@ export default function Document() {
           href="lib/@spectrum-css/actionbutton/dist/index-vars.css"
         />
       </Head>
-      <body>
+      <body style={{ margin: 0 }}>
         <Main />
         <NextScript />
       </body>

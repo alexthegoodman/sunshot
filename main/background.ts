@@ -45,10 +45,10 @@ let currentProjectId = null;
 
   mainWindow = createWindow("main", {
     width: 500,
-    height: 335,
+    height: 750,
   });
 
-  mainWindow.setMenu(null);
+  // mainWindow.setMenu(null);
   // mainWindow.setResizable(false);
 
   if (isProd) {

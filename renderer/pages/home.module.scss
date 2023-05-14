@@ -1,5 +1,44 @@
 @import "./shared.scss";
 
 .main {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 25px;
+  height: 100vh;
+  gap: 5px;
+
+  background-image: url("/unsplash1.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+  }
+
+  .innerContent {
+    position: relative;
+    z-index: 5;
+  }
+
+  h1,
+  p {
+    color: white;
+  }
+
+  button {
+    width: min-content;
+  }
+
+  .ctrls {
+    margin-top: 15px;
+  }
 }

@@ -43,7 +43,7 @@ const SourceSelector: React.FC<SourceSelectorProps> = ({
       <div
         className={`spectrum-Popover spectrum-Popover--bottom ${
           open ? "is-open" : ""
-        }`}
+        } ${styles.popover}`}
       >
         <ul className="spectrum-Menu" role="menu">
           {sources?.map((source) => (
