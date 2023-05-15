@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import styles from "./SourceSelector.module.scss";
+import shared from "../../pages/shared.module.scss";
 
 import { SourceSelectorProps } from "./SourceSelector.d";
 
@@ -35,7 +36,7 @@ const SourceSelector: React.FC<SourceSelectorProps> = ({
         } ${styles.actionBtn}`}
         onClick={handleActionClick}
       >
-        <span className={`spectrum-ActionButton-label ${styles.elipsis}`}>
+        <span className={`spectrum-ActionButton-label ${shared.elipsis}`}>
           {label}
         </span>
       </button>
@@ -55,7 +56,7 @@ const SourceSelector: React.FC<SourceSelectorProps> = ({
               className="spectrum-Menu-item"
               role="menuitem"
             >
-              <span className={`spectrum-Menu-itemLabel ${styles.elipsis}`}>
+              <span className={`spectrum-Menu-itemLabel ${shared.elipsis}`}>
                 {source.name}
               </span>
             </li>

@@ -32,10 +32,10 @@ const Properties: React.FC<PropertiesProps> = () => {
   };
 
   return (
-    <section>
+    <section className={`spectrum-Typography`} style={{ padding: "0 25px" }}>
       {trackData ? (
         <div>
-          <h1>
+          <h1 className="spectrum-Heading spectrum-Heading--sizeL">
             {trackKey === "videoTrack" ? "Video Properties" : "Zoom Properties"}
           </h1>
           <div>
@@ -61,7 +61,9 @@ const Properties: React.FC<PropertiesProps> = () => {
         </div>
       ) : (
         <div>
-          <h1>Properties</h1>
+          <h1 className="spectrum-Heading spectrum-Heading--sizeL">
+            Properties
+          </h1>
           <span>Select a track to edit its properties</span>
         </div>
       )}
