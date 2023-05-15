@@ -7,12 +7,9 @@
 
 ### Clone Repos
 
-Make sure to follow the README in both repos.
-Follow the `sunshot-recorder` README first!
-Clone these repos next to eachother.
+Clone this repo.
 
 - https://github.com/alexthegoodman/sunshot
-- https://github.com/alexthegoodman/sunshot-recorder
 
 ### Install Dependencies
 
@@ -22,7 +19,6 @@ May need to install GTK 2: https://github.com/Automattic/node-canvas/wiki/Instal
 `choco install ffmpeg`
 `volta install node@16.16.0`
 `npm install`
-`npm link sunshot-recorder`
 `./node_modules/.bin/electron-rebuild`
 ```
 

@@ -2,15 +2,16 @@
   "private": true,
   "name": "sunshot",
   "description": "Beautiful screen recorder",
-  "version": "1.0.0",
-  "author": "Alex Goodman <alexthegoodman@gmail.com>",
+  "version": "1.0.1",
+  "author": "Common <hello@madebycommon.com>",
   "main": "app/background.js",
   "build": {
     "asarUnpack": [
       "node_modules/ffmpeg-static/bin/${os}/${arch}/ffmpeg",
       "node_modules/ffmpeg-static/index.js",
       "node_modules/ffmpeg-static/package.json"
-    ]
+    ],
+    "buildDependenciesFromSource": true
   },
   "scripts": {
     "dev": "nextron",
@@ -41,6 +42,7 @@
     "react-konva": "^18.2.7",
     "recordrtc": "^5.6.2",
     "sass": "^1.62.1",
+    "sunshot-recorder": "^1.0.1",
     "use-image": "^1.1.0"
   },
   "devDependencies": {

@@ -26,6 +26,8 @@ const ffprobePath = require("ffprobe-static").path.replace(
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
+const savePath = app.getPath("appData");
+
 // require("@electron/remote/main").initialize();
 
 const isProd: boolean = process.env.NODE_ENV === "production";
@@ -93,7 +95,7 @@ ipcMain.on("create-project", (event, arg) => {
   console.info("create-project", arg);
   currentProjectId = randomUUID();
 
-  fs.mkdirSync(__dirname + `/projects/${currentProjectId}`, {
+  fs.mkdirSync(savePath + `/projects/${currentProjectId}`, {
     recursive: true,
   });
 
@@ -116,7 +118,7 @@ ipcMain.on("save-source-data", (event, { windowTitle }) => {
   const sourceData = setTargetWindow(windowTitle);
 
   fs.writeFileSync(
-    __dirname + `/projects/${currentProjectId}/sourceData.json`,
+    savePath + `/projects/${currentProjectId}/sourceData.json`,
     JSON.stringify(sourceData)
   );
 
@@ -151,7 +153,7 @@ ipcMain.on("stop-mouse-tracking", (event, { projectId }) => {
   console.info("stop-mouse-tracking", startTime, mousePositions);
 
   fs.writeFileSync(
-    __dirname + `/projects/${projectId}/mousePositions.json`,
+    savePath + `/projects/${projectId}/mousePositions.json`,
     JSON.stringify(mousePositions)
   );
 
@@ -163,7 +165,7 @@ ipcMain.on("save-video-blob", (event, { projectId, buffer, sourceId }) => {
 
   // save buffer to custom project file format
   fs.writeFileSync(
-    __dirname + `/projects/${projectId}/originalCapture.webm`,
+    savePath + `/projects/${projectId}/originalCapture.webm`,
     buffer
   );
 
@@ -171,11 +173,11 @@ ipcMain.on("save-video-blob", (event, { projectId, buffer, sourceId }) => {
 
   // // use ffmpeg to size down 1/4th
   // const inputVideoPath = path.join(
-  //   __dirname,
+  //   savePath,
   //   `/projects/${projectId}/originalCapture.webm`
   // );
   // const outputVideoPath = path.join(
-  //   __dirname,
+  //   savePath,
   //   `/projects/${projectId}/originalCapture25.webm`
   // );
 
@@ -196,7 +198,7 @@ ipcMain.on("save-transformed-blob", (event, { buffer }) => {
 
   // save buffer to custom project file format
   fs.writeFileSync(
-    __dirname +
+    savePath +
       `/projects/${currentProjectId}/transformedBlob${blobsSaved}.webm`,
     buffer
   );
@@ -210,12 +212,12 @@ ipcMain.on("combine-blobs", (event, args) => {
   console.info("combine-blobs");
 
   const videoFiles = new Array(blobsSaved + 1).fill(0).map((_, i) => {
-    return __dirname + `/projects/${currentProjectId}/transformedBlob${i}.webm`;
+    return savePath + `/projects/${currentProjectId}/transformedBlob${i}.webm`;
   });
 
   console.info("videoFiles", videoFiles);
 
-  const outputPath = __dirname + `/projects/${currentProjectId}/output.webm`;
+  const outputPath = savePath + `/projects/${currentProjectId}/output.webm`;
 
   // Create a new FFmpeg process
   const ffmpeg = spawn("ffmpeg", [
@@ -252,7 +254,7 @@ ipcMain.on("combine-blobs", (event, args) => {
   // });
 
   // // Set the output file path and format
-  // const outputPath = __dirname + `/projects/${currentProjectId}/output.webm`;
+  // const outputPath = savePath + `/projects/${currentProjectId}/output.webm`;
   // // command.output(outputPath);
 
   // // Run the command to concatenate the videos
@@ -281,22 +283,22 @@ ipcMain.on("get-project-data", (event, args) => {
 
   const mousePositions = JSON.parse(
     fs.readFileSync(
-      __dirname + `/projects/${currentProjectId}/mousePositions.json`
+      savePath + `/projects/${currentProjectId}/mousePositions.json`
     ) as unknown as string
   );
 
   const sourceData = JSON.parse(
     fs.readFileSync(
-      __dirname + `/projects/${currentProjectId}/sourceData.json`
+      savePath + `/projects/${currentProjectId}/sourceData.json`
     ) as unknown as string
   );
 
   const originalCapture = fs.readFileSync(
-    __dirname + `/projects/${currentProjectId}/originalCapture.webm`
+    savePath + `/projects/${currentProjectId}/originalCapture.webm`
   );
 
   // const originalCapture25 = fs.readFileSync(
-  //   __dirname + `/projects/${currentProjectId}/originalCapture25.webm`
+  //   savePath + `/projects/${currentProjectId}/originalCapture25.webm`
   // );
 
   event.returnValue = {
@@ -313,18 +315,18 @@ ipcMain.on("get-project-data", (event, args) => {
 
 //   const mousePositions = JSON.parse(
 //     fs.readFileSync(
-//       __dirname + `/projects/${currentProjectId}/mousePositions.json`
+//       savePath + `/projects/${currentProjectId}/mousePositions.json`
 //     ) as unknown as string
 //   );
 
 //   const sourceData = JSON.parse(
 //     fs.readFileSync(
-//       __dirname + `/projects/${currentProjectId}/sourceData.json`
+//       savePath + `/projects/${currentProjectId}/sourceData.json`
 //     ) as unknown as string
 //   );
 
 //   const originalCapture = fs.readFileSync(
-//     __dirname + `/projects/${currentProjectId}/originalCapture.webm`
+//     savePath + `/projects/${currentProjectId}/originalCapture.webm`
 //   );
 
 //   const divider = 1;
@@ -345,7 +347,7 @@ ipcMain.on("get-project-data", (event, args) => {
 //   // TODO: how?
 //   var imageObj = new Image();
 //   imageObj.src =
-//     __dirname + `/projects/${currentProjectId}/originalCapture.webm`;
+//     savePath + `/projects/${currentProjectId}/originalCapture.webm`;
 
 //   const video = new Konva.Image({
 //     image: imageObj,
@@ -362,20 +364,20 @@ ipcMain.on("get-project-data", (event, args) => {
 
 //   // const mousePositions = JSON.parse(
 //   //   fs.readFileSync(
-//   //     __dirname + `/projects/${currentProjectId}/mousePositions.json`
+//   //     savePath + `/projects/${currentProjectId}/mousePositions.json`
 //   //   ) as unknown as string
 //   // );
 
 //   // const originalCapture = fs.readFileSync(
-//   //   __dirname + `/projects/${currentProjectId}/originalCapture.webm`
+//   //   savePath + `/projects/${currentProjectId}/originalCapture.webm`
 //   // );
 
 //   const inputVideoPath = path.join(
-//     __dirname,
+//     savePath,
 //     `/projects/${currentProjectId}/originalCapture.webm`
 //   );
 //   const outputVideoPath = path.join(
-//     __dirname,
+//     savePath,
 //     `/projects/${currentProjectId}/transformedCapture.webm`
 //   );
 
