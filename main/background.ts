@@ -26,7 +26,10 @@ const ffprobePath = require("ffprobe-static").path.replace(
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
-const savePath = app.getPath("appData");
+const savePath =
+  process.env.NODE_ENV === "production" ? app.getPath("appData") : __dirname;
+
+const tempPath = app.getPath("temp");
 
 // require("@electron/remote/main").initialize();
 
@@ -211,71 +214,72 @@ ipcMain.on("save-transformed-blob", (event, { buffer }) => {
 ipcMain.on("combine-blobs", (event, args) => {
   console.info("combine-blobs");
 
-  const videoFiles = new Array(blobsSaved + 1).fill(0).map((_, i) => {
-    return savePath + `/projects/${currentProjectId}/transformedBlob${i}.webm`;
+  const videoFiles = new Array(blobsSaved).fill(0).map((_, i) => {
+    return (
+      savePath + `\\projects\\${currentProjectId}\\transformedBlob${i}.webm`
+    );
   });
 
-  console.info("videoFiles", videoFiles);
+  const outputPath = savePath + `\\projects\\${currentProjectId}\\output.webm`;
 
-  const outputPath = savePath + `/projects/${currentProjectId}/output.webm`;
+  let command = ffmpeg(videoFiles[0]);
 
-  // Create a new FFmpeg process
-  const ffmpeg = spawn("ffmpeg", [
-    "-f",
-    "concat",
-    "-i",
-    "concat:" + videoFiles.join("|"), // requires input.txt file
-    "-c",
-    "copy",
-    outputPath,
-  ]);
+  let otherFiles = videoFiles.slice(1, videoFiles.length);
 
-  console.info("ffmpeg", ffmpeg);
+  console.info("videoFiles", videoFiles[0], otherFiles, outputPath);
 
-  // print progress
-  // ffmpeg.stderr.on("data", (data) => {
-  //   console.log(data.toString());
-  // });
-
-  // Wait for the FFmpeg process to finish
-  ffmpeg.on("exit", (code) => {
-    if (code === 0) {
-      console.log("Concatenation successful!");
-    } else {
-      console.log("Concatenation failed!");
-    }
+  otherFiles.forEach((file, i) => {
+    command.input(file);
   });
 
+  command
+    .on("error", (err) => {
+      console.error("Error concatenating videos:", err);
+    })
+    .on("end", () => {
+      console.log("Videos concatenated successfully!");
+    })
+    .mergeToFile(outputPath, tempPath);
+
+  // only plays first video
   // const command = ffmpeg();
 
-  // // Loop through the video file paths and add them to the command as inputs
   // videoFiles.forEach((file) => {
   //   command.input(file);
   // });
 
-  // // Set the output file path and format
-  // const outputPath = savePath + `/projects/${currentProjectId}/output.webm`;
-  // // command.output(outputPath);
+  // command.output(outputPath);
 
-  // // Run the command to concatenate the videos
-  // command
-  //   .concat()
-  //   .output(outputPath)
-  //   .on("start", () => {
-  //     console.log("FFmpeg processing started");
-  //   })
-  //   .on("progress", (progress) => {
-  //     console.log(`Processing: ${progress}% done`);
-  //   })
-  //   .on("end", () => {
-  //     console.log("FFmpeg processing finished");
-  //     event.returnValue = true;
-  //   })
-  //   .on("error", (error) => {
-  //     console.error("FFmpeg processing error:", error.message);
-  //     event.returnValue = true;
-  //   })
-  //   .run();
+  // command.run();
+
+  // console.info("videoFiles", videoFiles);
+
+  // simply fails, may work with input.txt file, may not spawn in package
+  // const ffmpeg = spawn("ffmpeg", [
+  //   "-f",
+  //   "concat",
+  //   "-i",
+  //   "concat:" + videoFiles.join("|"), // requires input.txt file
+  //   "-c",
+  //   "copy",
+  //   outputPath,
+  // ]);
+
+  // console.info("ffmpeg", ffmpeg);
+
+  // // print progress
+  // // ffmpeg.stderr.on("data", (data) => {
+  // //   console.log(data.toString());
+  // // });
+
+  // // Wait for the FFmpeg process to finish
+  // ffmpeg.on("exit", (code) => {
+  //   if (code === 0) {
+  //     console.log("Concatenation successful!");
+  //   } else {
+  //     console.log("Concatenation failed!");
+  //   }
+  // });
 });
 
 ipcMain.on("get-project-data", (event, args) => {

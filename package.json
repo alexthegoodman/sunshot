@@ -28,6 +28,7 @@
     "@spectrum-css/page": "^5.0.26",
     "@spectrum-css/textfield": "^5.1.4",
     "@spectrum-css/vars": "^9.0.5",
+    "@types/fluent-ffmpeg": "^2.1.21",
     "canvas": "github:Automattic/node-canvas#napi",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.1.0",
