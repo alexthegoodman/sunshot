@@ -71,7 +71,7 @@ const Video = ({
     });
   }, [innerWidth, innerHeight]);
 
-  const zoomIn = (zoomFactor, zoomPoint) => {
+  const zoomIn = (zoomFactor, zoomPoint, easing) => {
     // console.info("zoomIn", zoomFactor, zoomPoint);
     setZoomedIn(true);
 
@@ -79,7 +79,7 @@ const Video = ({
       scaleX: zoomFactor,
       scaleY: zoomFactor,
       duration: zoomedIn ? 0.1 : 2,
-      easing: Konva.Easings.EaseInOut,
+      easing: Konva.Easings[easing],
       // x
       // y
       offsetX: zoomPoint.x,
@@ -87,14 +87,14 @@ const Video = ({
     });
   };
 
-  const zoomOut = () => {
+  const zoomOut = (easing) => {
     setZoomedIn(false);
 
     imageRef.current.to({
       scaleX: 1,
       scaleY: 1,
       duration: 2,
-      easing: Konva.Easings.EaseInOut,
+      easing: Konva.Easings[easing],
       // x
       // y
       offsetX: 0,
@@ -113,7 +113,7 @@ const Video = ({
       anim.start();
 
       // mouse follow animation
-      const zoomFactor = 2;
+      // const zoomFactor = 2;
       const refreshRate = 100;
       let point = 0;
       let timeElapsed = 0;
@@ -139,11 +139,11 @@ const Video = ({
                 0.8,
             };
 
-            zoomIn(zoomFactor, zoomPoint);
+            zoomIn(track.zoomFactor, zoomPoint, track.easing);
           }
 
           if (Math.floor(timeElapsed) === Math.floor(track.end)) {
-            zoomOut();
+            zoomOut(track.easing);
           }
         });
 

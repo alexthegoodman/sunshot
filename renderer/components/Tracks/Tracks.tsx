@@ -4,7 +4,9 @@ import styles from "./Tracks.module.scss";
 
 import { TracksProps } from "./Tracks.d";
 import {
+  KonvaEasings,
   VideoTrack,
+  ZoomTrack,
   useEditorContext,
 } from "../../context/EditorContext/EditorContext";
 import { randomUUID } from "crypto";
@@ -31,7 +33,7 @@ const Tracks: React.FC<TracksProps> = ({
 
       dispatch({ key: "videoTrack", value: initalVideoTrack });
 
-      const testZoomTracks = [
+      const testZoomTracks: ZoomTrack[] = [
         // {
         //   id: 1,
         //   start: 1000,
@@ -43,12 +45,14 @@ const Tracks: React.FC<TracksProps> = ({
           start: 5000,
           end: 12000,
           zoomFactor: 2,
+          easing: KonvaEasings.EaseInOut,
         },
         {
           id: randomUUID(),
           start: 16000,
           end: 25000,
           zoomFactor: 2,
+          easing: KonvaEasings.EaseInOut,
         },
       ];
 

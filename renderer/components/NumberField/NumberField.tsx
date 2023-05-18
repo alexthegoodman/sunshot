@@ -12,7 +12,8 @@ const NumberField: React.FC<NumberFieldProps> = ({
   return (
     <div className="spectrum-Form-item">
       <label
-        className="spectrum-FieldLabel spectrum-FieldLabel--sizeM spectrum-Form-itemLabel spectrum-FieldLabel--left"
+        className="spectrum-FieldLabel spectrum-FieldLabel--sizeL spectrum-Form-itemLabel spectrum-FieldLabel--left"
+        style={{ minWidth: "50px" }}
         htmlFor={id}
       >
         {label}
@@ -26,7 +27,7 @@ const NumberField: React.FC<NumberFieldProps> = ({
               placeholder="Enter a number"
               //   min="-2"
               //   max=""
-              step="1"
+              // step={"0.01"}
               id={id}
               {...props}
             />

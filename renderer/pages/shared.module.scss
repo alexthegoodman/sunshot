@@ -71,3 +71,9 @@
 .popover {
   z-index: 10;
 }
+
+.flexForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
