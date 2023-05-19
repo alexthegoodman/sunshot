@@ -8,7 +8,10 @@ import { Stage, Layer, Rect, Text, Group, Image, Shape } from "react-konva";
 import Konva from "konva";
 import useImage from "use-image";
 import { Image as ImageType } from "konva/lib/shapes/Image";
-import { useEditorContext } from "../../context/EditorContext/EditorContext";
+import {
+  KonvaEasings,
+  useEditorContext,
+} from "../../context/EditorContext/EditorContext";
 import { ipcRenderer } from "electron";
 import { CanvasRecorder } from "recordrtc";
 import html2canvas from "html2canvas";
@@ -171,7 +174,7 @@ const Video = ({
         videoElement.pause();
         clearInterval(zoomInterval);
         setCurrentTime(0);
-        zoomOut();
+        zoomOut(KonvaEasings.Linear);
 
         if (stopped) {
           videoElement.currentTime = 0;

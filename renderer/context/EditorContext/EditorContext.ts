@@ -68,12 +68,20 @@ export interface EditorContextState {
   videoTrack: VideoTrack | null;
   zoomTracks: ZoomTrack[] | null;
   selectedTrack: string | null;
+  currentTime: number;
+  playing: boolean;
+  stopped: boolean;
+  exporting: boolean;
 }
 
 export const EditorContextState = {
   videoTrack: null,
   zoomTracks: null,
   selectedTrack: null,
+  currentTime: 0,
+  playing: false,
+  stopped: true,
+  exporting: false,
 };
 
 export const EditorContextReducer = (
