@@ -15,7 +15,6 @@ import SelectField from "../SelectField/SelectField";
 import { FlexForm } from "../SharedStyles/SharedStyles";
 
 const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
-  trackKey = null,
   trackData = null,
   updateTrack = () => console.info("updateTrack"),
 }) => {

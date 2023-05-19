@@ -5,7 +5,6 @@ import styles from "./VideoProperties.module.scss";
 import { VideoPropertiesProps } from "./VideoProperties.d";
 
 const VideoProperties: React.FC<VideoPropertiesProps> = ({
-  trackKey = null,
   trackData = null,
   updateTrack = () => console.info("updateTrack"),
 }) => {
