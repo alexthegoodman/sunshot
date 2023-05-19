@@ -21,18 +21,18 @@ const Properties: React.FC<PropertiesProps> = () => {
   const trackKey =
     trackData?.id === videoTrack?.id ? "videoTrack" : "zoomTracks";
 
-  const updateTrack = (trackKey, key, value) => {
-    if (trackKey === "videoTrack") {
-      dispatch({ key: "videoTrack", value: { ...trackData, [key]: value } });
-    } else {
-      const updatedZoomTracks = zoomTracks.map((track) => {
-        if (track.id === selectedTrack) {
-          return { ...track, [key]: value };
-        }
-        return track;
-      });
-      dispatch({ key: "zoomTracks", value: updatedZoomTracks });
-    }
+  const updateVideoTrack = (key, value) => {
+    dispatch({ key: "videoTrack", value: { ...trackData, [key]: value } });
+  };
+
+  const updateZoomTrack = (key, value) => {
+    const updatedZoomTracks = zoomTracks.map((track) => {
+      if (track.id === selectedTrack) {
+        return { ...track, [key]: value };
+      }
+      return track;
+    });
+    dispatch({ key: "zoomTracks", value: updatedZoomTracks });
   };
 
   return (
@@ -46,13 +46,13 @@ const Properties: React.FC<PropertiesProps> = () => {
             <VideoProperties
               trackKey={trackKey}
               trackData={trackData}
-              updateTrack={updateTrack}
+              updateTrack={updateVideoTrack}
             />
           ) : (
             <ZoomProperties
               trackKey={trackKey}
               trackData={trackData}
-              updateTrack={updateTrack}
+              updateTrack={updateZoomTrack}
             />
           )}
         </>

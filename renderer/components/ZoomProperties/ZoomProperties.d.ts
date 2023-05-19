@@ -6,5 +6,5 @@ import {
 export interface ZoomPropertiesProps {
   trackKey: string;
   trackData: ZoomTrack;
-  updateTrack: (trackKey: string, key: string, value: any) => void;
+  updateTrack: (key: string, value: any) => void;
 }

@@ -41,7 +41,7 @@ const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
           value={trackData.start}
           onChange={(e) => {
             const start = parseInt(e.target.value);
-            updateTrack(trackKey, "start", start);
+            updateTrack("start", start);
           }}
         />
         <NumberField
@@ -50,7 +50,7 @@ const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
           value={trackData.end}
           onChange={(e) => {
             const end = parseInt(e.target.value);
-            updateTrack(trackKey, "end", end);
+            updateTrack("end", end);
           }}
         />
         <NumberField
@@ -59,7 +59,7 @@ const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
           value={trackData.zoomFactor}
           onChange={(e) => {
             const zoomFactor = parseInt(e.target.value);
-            updateTrack(trackKey, "zoomFactor", zoomFactor);
+            updateTrack("zoomFactor", zoomFactor);
           }}
         />
         <SelectField
@@ -73,7 +73,7 @@ const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
               (key) => KonvaEasingLabels[key] === easing.label
             );
             console.info("onItemSelect", id, easing, easingKey);
-            updateTrack(trackKey, "easing", easingKey);
+            updateTrack("easing", easingKey);
           }}
         />
       </FlexForm>
