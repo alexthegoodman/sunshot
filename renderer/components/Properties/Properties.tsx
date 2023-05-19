@@ -6,20 +6,9 @@ import styles from "./Properties.module.scss";
 import styled from "styled-components";
 
 import { PropertiesProps } from "./Properties.d";
-import {
-  KonvaEasingLabels,
-  VideoTrack,
-  ZoomTrack,
-  useEditorContext,
-} from "../../context/EditorContext/EditorContext";
-import NumberField from "../NumberField/NumberField";
-import SelectField from "../SelectField/SelectField";
-
-const FlexForm = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
+import { useEditorContext } from "../../context/EditorContext/EditorContext";
+import ZoomProperties from "../ZoomProperties/ZoomProperties";
+import VideoProperties from "../VideoProperties/VideoProperties";
 
 const Properties: React.FC<PropertiesProps> = () => {
   const [{ videoTrack, zoomTracks, selectedTrack }, dispatch] =
@@ -46,14 +35,6 @@ const Properties: React.FC<PropertiesProps> = () => {
     }
   };
 
-  const easingOptions = Object.values(KonvaEasingLabels).map((label, i) => ({
-    id: `${i}`,
-    label,
-  }));
-  const selectedEasingId = easingOptions.find(
-    (option) => KonvaEasingLabels[trackData?.easing] === option.label
-  )?.id;
-
   return (
     <section
       className={`${styles.properties} spectrum-Typography`}
@@ -62,67 +43,17 @@ const Properties: React.FC<PropertiesProps> = () => {
       {trackData ? (
         <>
           {trackKey === "videoTrack" ? (
-            <div>
-              <h1
-                className={`${styles.headline} spectrum-Heading spectrum-Heading--sizeL`}
-              >
-                Video Properties
-              </h1>
-              <div>Gradient</div>
-            </div>
+            <VideoProperties
+              trackKey={trackKey}
+              trackData={trackData}
+              updateTrack={updateTrack}
+            />
           ) : (
-            <div>
-              <h1
-                className={`${styles.headline} spectrum-Heading spectrum-Heading--sizeL`}
-              >
-                Zoom Properties
-              </h1>
-              <FlexForm>
-                <NumberField
-                  id="start"
-                  label="Start"
-                  value={trackData.start}
-                  onChange={(e) => {
-                    const start = parseInt(e.target.value);
-                    updateTrack(trackKey, "start", start);
-                  }}
-                />
-                <NumberField
-                  id="end"
-                  label="End"
-                  value={trackData.end}
-                  onChange={(e) => {
-                    const end = parseInt(e.target.value);
-                    updateTrack(trackKey, "end", end);
-                  }}
-                />
-                <NumberField
-                  id="zoomFactor"
-                  label="Zoom"
-                  value={trackData.zoomFactor}
-                  onChange={(e) => {
-                    const zoomFactor = parseInt(e.target.value);
-                    updateTrack(trackKey, "zoomFactor", zoomFactor);
-                  }}
-                />
-                <SelectField
-                  id="easing"
-                  label="Easing"
-                  items={easingOptions}
-                  selectedItem={selectedEasingId}
-                  onItemSelect={(id) => {
-                    const easing = easingOptions.find(
-                      (option) => option.id === id
-                    );
-                    const easingKey = Object.keys(KonvaEasingLabels).find(
-                      (key) => KonvaEasingLabels[key] === easing.label
-                    );
-                    console.info("onItemSelect", id, easing, easingKey);
-                    updateTrack(trackKey, "easing", easingKey);
-                  }}
-                />
-              </FlexForm>
-            </div>
+            <ZoomProperties
+              trackKey={trackKey}
+              trackData={trackData}
+              updateTrack={updateTrack}
+            />
           )}
         </>
       ) : (

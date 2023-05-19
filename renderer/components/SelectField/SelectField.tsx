@@ -41,13 +41,17 @@ const SelectField: React.FC<SelectFieldProps> = ({
   return (
     <>
       <div className="spectrum-Form-item">
-        <label
-          className="spectrum-FieldLabel spectrum-FieldLabel--sizeL spectrum-Form-itemLabel spectrum-FieldLabel--left"
-          style={{ minWidth: "50px" }}
-          htmlFor={id}
-        >
-          {label}
-        </label>
+        {label ? (
+          <label
+            className="spectrum-FieldLabel spectrum-FieldLabel--sizeL spectrum-Form-itemLabel spectrum-FieldLabel--left"
+            style={{ minWidth: "50px" }}
+            htmlFor={id}
+          >
+            {label}
+          </label>
+        ) : (
+          <></>
+        )}
         <div className="spectrum-Form-itemField">
           <button
             className={`spectrum-ActionButton spectrum-ActionButton--sizeM spectrum-ActionButton--quiet ${
