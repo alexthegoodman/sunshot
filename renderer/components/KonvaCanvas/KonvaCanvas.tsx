@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import styles from "./KonvaCanvas.module.scss";
+// import styles from "./KonvaCanvas.module.scss";
 
 import { KonvaCanvasProps } from "./KonvaCanvas.d";
 
@@ -15,8 +15,28 @@ import {
 import { ipcRenderer } from "electron";
 import { CanvasRecorder } from "recordrtc";
 import html2canvas from "html2canvas";
+import { styled } from "styled-components";
 
-// import { MediaRecorder } from "extendable-media-recorder"; // Blob is not defined
+const ProjectCtrls = styled.section`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 15px 0;
+`;
+
+const StageContainer = styled.section`
+  display: flex;
+  justify-content: center;
+  background-color: lightgray;
+`;
+
+const VideoCtrls = styled.section`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 15px;
+  padding: 15px 0;
+`;
 
 let anim = null;
 let zoomInterval = null;
@@ -352,15 +372,15 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
 
   return (
     <>
-      <section className={styles.projectCtrls}>
+      <ProjectCtrls>
         <button
           className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM"
           onClick={exportVideo}
         >
           Export
         </button>
-      </section>
-      <section className={`${styles.stageContainer} ${exporting ? "" : ""}`}>
+      </ProjectCtrls>
+      <StageContainer className={`${exporting ? "" : ""}`}>
         <Stage id="stage" ref={stageRef} width={width25} height={height25}>
           <Layer ref={layerRef}>
             <Rect
@@ -415,8 +435,8 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
             </Group>
           </Layer>
         </Stage>
-      </section>
-      <section className={styles.videoCtrls}>
+      </StageContainer>
+      <VideoCtrls>
         <button
           className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM"
           onClick={playVideo}
@@ -437,7 +457,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
         >
           Stop
         </button>
-      </section>
+      </VideoCtrls>
       {/* <video id="recordedCapture" autoPlay={true} loop={true}></video> */}
     </>
   );

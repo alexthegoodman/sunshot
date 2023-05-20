@@ -13,8 +13,9 @@ import {
 import EditorCtrls from "../components/EditorCtrls/EditorCtrls";
 import KonvaCanvas from "../components/KonvaCanvas/KonvaCanvas";
 import Properties from "../components/Properties/Properties";
-import NoSSR from "../components/NoSSR/NoSSR";
+import NoSSRCanvas from "../components/NoSSRCanvas/NoSSRCanvas";
 import Script from "next/script";
+import NoSSRTracks from "../components/NoSSRTracks/NoSSRTracks";
 
 function Editor() {
   const [positions, setPositions] = React.useState(null);
@@ -65,14 +66,14 @@ function Editor() {
                 // originalCapture={originalCapture}
                 originalDuration={originalDuration}
               /> */}
-              <NoSSR
+              <NoSSRCanvas
                 positions={positions}
                 originalDuration={originalDuration}
                 originalCapture={originalCapture}
                 sourceData={sourceData}
                 // originalCapture25={originalCapture25}
               />
-              <Tracks
+              <NoSSRTracks
                 positions={positions}
                 originalDuration={originalDuration}
               />

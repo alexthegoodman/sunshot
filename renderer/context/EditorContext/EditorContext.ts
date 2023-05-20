@@ -53,6 +53,7 @@ export interface Position {
 
 export interface Track {
   id: string;
+  name: string;
   start: number;
   end: number;
 }
@@ -62,6 +63,7 @@ export interface VideoTrack extends Track {}
 export interface ZoomTrack extends Track {
   zoomFactor: number;
   easing: KonvaEasings;
+  // animationDuration ?
 }
 
 export interface EditorContextState {
@@ -89,8 +91,13 @@ export const EditorContextReducer = (
   action: any
 ) => {
   switch (action.type) {
-    // case value:
-    //   break;
+    case "multiple":
+      let newState = { ...state };
+      action.values.forEach((value: any) => {
+        newState[value.key] = value.value;
+      });
+      return newState;
+      break;
 
     default:
       return {

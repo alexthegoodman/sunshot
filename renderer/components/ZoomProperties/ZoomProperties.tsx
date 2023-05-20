@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import styles from "./ZoomProperties.module.scss";
+// import styles from "./ZoomProperties.module.scss";
 
 import { ZoomPropertiesProps } from "./ZoomProperties.d";
 
@@ -28,9 +28,7 @@ const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
 
   return (
     <div>
-      <h1
-        className={`${styles.headline} spectrum-Heading spectrum-Heading--sizeL`}
-      >
+      <h1 className={`spectrum-Heading spectrum-Heading--sizeL`}>
         Zoom Properties
       </h1>
       <FlexForm>
