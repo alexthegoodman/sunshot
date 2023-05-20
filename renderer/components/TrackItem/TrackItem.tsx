@@ -3,6 +3,7 @@ import * as React from "react";
 import { TrackItemProps } from "./TrackItem.d";
 
 import { motion } from "framer-motion";
+import Draggable from "react-draggable";
 
 let listenerAttached = 0;
 
@@ -14,14 +15,17 @@ const TrackItem: React.FC<TrackItemProps> = ({
   updateTrack = () => console.info("updateTrack"),
 }) => {
   const { id, start, end, zoomFactor } = track;
-  const width = ((end - start) / originalDuration) * 100;
-  // const width = (end / originalDuration) * 100;
-  const left = (start / originalDuration) * 100;
 
   const [translating, setTranslating] = React.useState(false);
   const [resizingLeft, setResizingLeft] = React.useState(false);
   const [resizingRight, setResizingRight] = React.useState(false);
   const [withinLeft, setWithinLeft] = React.useState(false);
+
+  //   const [liveStart, setLiveStart] = React.useState(start);
+  //   const [liveEnd, setLiveEnd] = React.useState(end);
+
+  const width = ((end - start) / originalDuration) * 100;
+  const left = (start / originalDuration) * 100;
 
   // TODO: esc key should cancel any dragging
 
@@ -68,6 +72,8 @@ const TrackItem: React.FC<TrackItemProps> = ({
           ],
           true
         );
+        // setLiveStart(newStart);
+        // setLiveEnd(newEnd);
       }
       if (resizingLeft) {
         const newWidth = width - (clientX - left);
@@ -172,41 +178,54 @@ const TrackItem: React.FC<TrackItemProps> = ({
   //   };
 
   return (
-    <div
+    <Draggable
+      axis="x"
+      handle=".itemHandle"
+      defaultPosition={{ x: left, y: 0 }}
+      position={null}
+      grid={[25, 25]}
+      scale={1}
+      // onStart={this.handleStart}
+      // onDrag={this.handleDrag}
+      // onStop={this.handleStop}
       //   drag={resizingLeft || resizingRight ? false : "x"}
       //   dragConstraints={constraintsRef}
       //   onDragEnd={itemDragEnd}
       key={id}
-      id={id}
-      className={"item"}
-      style={{
-        left: `${left}%`, // conflicts with drag?
-        width: `${width}%`,
-      }}
-      onClick={() => handleClick(id)}
+      //   id={id}
+      defaultClassName={"item"}
+
+      //   onClick={() => handleClick(id)}
     >
       <div
-        className="leftHandle"
-        onMouseDown={leftHandleDown}
-        onMouseUp={leftHandleUp}
-        // onMouseEnter={leftHandleEnter}
-        // onMouseLeave={leftHandleLeave}
-      ></div>
-      <div
-        className="itemHandle"
-        onMouseDown={itemHandleDown}
-        onMouseUp={itemHandleUp}
-        onMouseEnter={itemHandleEnter}
-        onMouseLeave={itemHandleLeave}
+        style={{
+          // left: `${left}%`, // conflicts with drag?
+          width: `${width}%`,
+        }}
       >
-        <span className="name">{track.name}</span>
+        <div
+          className="leftHandle"
+          onMouseDown={leftHandleDown}
+          onMouseUp={leftHandleUp}
+          // onMouseEnter={leftHandleEnter}
+          // onMouseLeave={leftHandleLeave}
+        ></div>
+        <div
+          className="itemHandle"
+          //   onMouseDown={itemHandleDown}
+          //   onMouseUp={itemHandleUp}
+          //   onMouseEnter={itemHandleEnter}
+          //   onMouseLeave={itemHandleLeave}
+        >
+          <span className="name">{track.name}</span>
+        </div>
+        <div
+          className="rightHandle"
+          onMouseDown={rightHandleDown}
+          onMouseUp={rightHandleUp}
+        ></div>
       </div>
-      <div
-        className="rightHandle"
-        onMouseDown={rightHandleDown}
-        onMouseUp={rightHandleUp}
-      ></div>
-    </div>
+    </Draggable>
   );
 };
 
