@@ -13,6 +13,7 @@ import { randomUUID } from "crypto";
 import { styled } from "styled-components";
 import TrackItem from "../TrackItem/TrackItem";
 import { motion } from "framer-motion";
+import { useElementSize } from "usehooks-ts";
 
 const TracksContainer = styled.section`
   position: relative;
@@ -25,6 +26,12 @@ const TracksContainer = styled.section`
   user-select: none;
 
   .tracksInner {
+    position: relative;
+
+    .trackLength {
+      position: absolute;
+      left: 5px;
+    }
     .ticks {
       display: flex;
       flex-direction: row;
@@ -156,10 +163,15 @@ const Tracks: React.FC<TracksProps> = ({
   const [{ videoTrack, zoomTracks, selectedTrack }, dispatch] =
     useEditorContext();
 
+  const [trackRef, { width: trackWidth, height: trackHeight }] =
+    useElementSize();
+
   const constraintsRef = React.useRef(null);
 
   const nearestSecond = Math.ceil(originalDuration / 1000) * 1000;
   const seconds = nearestSecond / 1000;
+  const numTicks = 10;
+  const tickSpace = seconds / numTicks;
 
   React.useEffect(() => {
     if (originalDuration) {
@@ -229,10 +241,13 @@ const Tracks: React.FC<TracksProps> = ({
     <TracksContainer>
       <div className={"tracksInner"}>
         <div className={"ticks"}>
-          {new Array(seconds).fill(0).map((x, i) => {
+          <span className="trackLength">
+            {Math.round(originalDuration / 1000)}s
+          </span>
+          {new Array(numTicks).fill(0).map((x, i) => {
             return (
               <div className={"tick"}>
-                <span>{i + 1}</span>
+                <span>{Math.round(tickSpace * (i + 1))}</span>
               </div>
             );
           })}
@@ -249,7 +264,7 @@ const Tracks: React.FC<TracksProps> = ({
             </div>
           </div>
         </div>
-        <div className={`track zoomTrack`}>
+        <div className={`track zoomTrack`} ref={trackRef}>
           <motion.div className={"trackInner"} ref={constraintsRef}>
             {zoomTracks?.map((track) => {
               return (
@@ -257,6 +272,7 @@ const Tracks: React.FC<TracksProps> = ({
                   updateTrack={updateZoomTrack}
                   constraintsRef={constraintsRef}
                   track={track}
+                  trackWidth={trackWidth}
                   originalDuration={originalDuration}
                   handleClick={handleTrackClick}
                 />

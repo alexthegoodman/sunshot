@@ -4,12 +4,14 @@ import { TrackItemProps } from "./TrackItem.d";
 
 import { motion } from "framer-motion";
 import Draggable from "react-draggable";
+import useElementSize from "../../hooks/useElementSize";
 
 let listenerAttached = 0;
 
 const TrackItem: React.FC<TrackItemProps> = ({
   constraintsRef = null,
   track = null,
+  trackWidth = 1,
   originalDuration = 1,
   handleClick = () => console.info("handleClick"),
   updateTrack = () => console.info("updateTrack"),
@@ -25,7 +27,8 @@ const TrackItem: React.FC<TrackItemProps> = ({
   //   const [liveEnd, setLiveEnd] = React.useState(end);
 
   const width = ((end - start) / originalDuration) * 100;
-  const left = (start / originalDuration) * 100;
+  const leftPerc = (start / originalDuration) * 100;
+  const left = trackWidth * (leftPerc / 100);
 
   // TODO: esc key should cancel any dragging
 
@@ -154,29 +157,6 @@ const TrackItem: React.FC<TrackItemProps> = ({
     setResizingRight(false);
   };
 
-  //   const itemDragEnd = (e, info) => {
-  //     console.info("itemDragEnd", info);
-  //     const wrapper = document.getElementById("videoTrackWrapper");
-  //     const wrapperRect = wrapper.getBoundingClientRect();
-  //     const {
-  //       left: wrapperLeft,
-  //       right: wrapperRight,
-  //       width: wrapperWidth,
-  //     } = wrapperRect;
-
-  //     const msPerPixel = originalDuration / wrapperWidth;
-
-  //     const { point } = info;
-  //     const { x } = point;
-
-  //     console.info("x", x, msPerPixel);
-
-  //     const newStart = x * msPerPixel;
-  //     const newEnd = Math.floor(x + width);
-  //     updateTrack(track.id, "start", newStart);
-  //     // updateTrack(track.id, "end", newEnd);
-  //   };
-
   return (
     <Draggable
       axis="x"
@@ -194,8 +174,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
       key={id}
       //   id={id}
       defaultClassName={"item"}
-
-      //   onClick={() => handleClick(id)}
+      onMouseDown={() => handleClick(id)}
     >
       <div
         style={{
