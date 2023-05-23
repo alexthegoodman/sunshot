@@ -180,6 +180,23 @@ const TrackItem: React.FC<TrackItemProps> = ({
     );
   };
 
+  const onResizeStop = (e, direction, ref, d) => {
+    const { width, height } = ref.style;
+    const newWidth = parseInt(width);
+
+    if (direction === "left") {
+      //   const newStart = Math.floor((left + d.width) * msPerPixel);
+      //   updateTrack(track.id, "start", newStart);
+      // set to match glitch from resizable so bug doesnt bubble up
+      // but it should not shorten from right side
+      const newEnd = Math.floor((left + newWidth) * msPerPixel);
+      updateTrack(track.id, "end", newEnd);
+    } else if (direction === "right") {
+      const newEnd = Math.floor((left + newWidth) * msPerPixel);
+      updateTrack(track.id, "end", newEnd);
+    }
+  };
+
   return (
     <Draggable
       axis="x"
@@ -209,6 +226,9 @@ const TrackItem: React.FC<TrackItemProps> = ({
         }}
         minHeight={trackHeight}
         maxHeight={trackHeight}
+        minWidth={5}
+        maxWidth={trackWidth}
+        onResizeStop={onResizeStop}
       >
         <div
           style={
