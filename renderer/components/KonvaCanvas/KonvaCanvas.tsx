@@ -95,7 +95,7 @@ const Video = ({
   }, [innerWidth, innerHeight]);
 
   const zoomIn = (zoomFactor, zoomPoint, easing) => {
-    // console.info("zoomIn", zoomFactor, zoomPoint);
+    console.info("zoomIn", zoomFactor, zoomPoint);
     setZoomedIn(true);
 
     imageRef.current.to({
@@ -111,6 +111,7 @@ const Video = ({
   };
 
   const zoomOut = (easing) => {
+    console.info("zoomOut");
     setZoomedIn(false);
 
     imageRef.current.to({
@@ -149,7 +150,10 @@ const Video = ({
         }
 
         zoomTracks.forEach((track) => {
-          if (Math.floor(timeElapsed) === Math.floor(track.start)) {
+          if (
+            Math.floor(timeElapsed) <= Math.floor(track.start) &&
+            Math.floor(timeElapsed) + refreshRate > Math.floor(track.start)
+          ) {
             const predictionOffset = 0;
             const zoomPoint = {
               x:
@@ -165,7 +169,10 @@ const Video = ({
             zoomIn(track.zoomFactor, zoomPoint, track.easing);
           }
 
-          if (Math.floor(timeElapsed) === Math.floor(track.end)) {
+          if (
+            Math.floor(timeElapsed) < Math.floor(track.end) &&
+            Math.floor(timeElapsed) + refreshRate >= Math.floor(track.end)
+          ) {
             zoomOut(track.easing);
           }
         });
