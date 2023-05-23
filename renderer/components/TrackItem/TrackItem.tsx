@@ -27,6 +27,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
   //   const [liveEnd, setLiveEnd] = React.useState(end);
 
   const width = ((end - start) / originalDuration) * 100;
+  const widthPx = trackWidth * (width / 100);
   const leftPerc = (start / originalDuration) * 100;
   const left = trackWidth * (leftPerc / 100);
 
@@ -59,25 +60,25 @@ const TrackItem: React.FC<TrackItemProps> = ({
       const baseX = clientX - 200; // -200 to account for offset
       const totalX = left + (clientX - left);
 
-      if (translating) {
-        const pixelsForX = baseX * pixelPerMs;
-        const clientXMs = baseX * pixelPerMs;
-        const widthMs = width * pixelPerMs;
-        // console.info("msForX", clientX, pixelPerMs, clientXMs, width);
-        const newStart = Math.floor(clientXMs);
-        const newEnd = Math.floor(newStart + widthMs); // dont add width to ms times, convert width to ms
-        updateTrack(
-          track.id,
-          "",
-          [
-            { key: "start", value: newStart },
-            { key: "end", value: newEnd },
-          ],
-          true
-        );
-        // setLiveStart(newStart);
-        // setLiveEnd(newEnd);
-      }
+      //   if (translating) {
+      //     const pixelsForX = baseX * pixelPerMs;
+      //     const clientXMs = baseX * pixelPerMs;
+      //     const widthMs = width * pixelPerMs;
+      //     // console.info("msForX", clientX, pixelPerMs, clientXMs, width);
+      //     const newStart = Math.floor(clientXMs);
+      //     const newEnd = Math.floor(newStart + widthMs); // dont add width to ms times, convert width to ms
+      //     updateTrack(
+      //       track.id,
+      //       "",
+      //       [
+      //         { key: "start", value: newStart },
+      //         { key: "end", value: newEnd },
+      //       ],
+      //       true
+      //     );
+      //     // setLiveStart(newStart);
+      //     // setLiveEnd(newEnd);
+      //   }
       if (resizingLeft) {
         const newWidth = width - (clientX - left);
         const newLeft = left + (clientX - left);
@@ -157,6 +158,29 @@ const TrackItem: React.FC<TrackItemProps> = ({
     setResizingRight(false);
   };
 
+  const onDragStop = (e, data) => {
+    // set live start and end
+    const { node, x, deltaX, lastX } = data;
+
+    const msPerPixel = originalDuration / trackWidth;
+
+    console.info("ondragstop", x, msPerPixel);
+
+    const newStart = Math.floor(x * msPerPixel);
+
+    const newEnd = Math.floor((x + widthPx) * msPerPixel);
+
+    updateTrack(
+      track.id,
+      "",
+      [
+        { key: "start", value: newStart },
+        { key: "end", value: newEnd },
+      ],
+      true
+    );
+  };
+
   return (
     <Draggable
       axis="x"
@@ -175,6 +199,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
       //   id={id}
       defaultClassName={"item"}
       onMouseDown={() => handleClick(id)}
+      onStop={onDragStop}
     >
       <div
         style={{
