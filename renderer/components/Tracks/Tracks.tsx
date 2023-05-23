@@ -273,6 +273,7 @@ const Tracks: React.FC<TracksProps> = ({
                   constraintsRef={constraintsRef}
                   track={track}
                   trackWidth={trackWidth}
+                  trackHeight={trackHeight}
                   originalDuration={originalDuration}
                   handleClick={handleTrackClick}
                 />

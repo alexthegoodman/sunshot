@@ -2,9 +2,8 @@ import * as React from "react";
 
 import { TrackItemProps } from "./TrackItem.d";
 
-import { motion } from "framer-motion";
 import Draggable from "react-draggable";
-import useElementSize from "../../hooks/useElementSize";
+import { Resizable } from "re-resizable";
 
 let listenerAttached = 0;
 
@@ -12,6 +11,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
   constraintsRef = null,
   track = null,
   trackWidth = 1,
+  trackHeight = 1,
   originalDuration = 1,
   handleClick = () => console.info("handleClick"),
   updateTrack = () => console.info("updateTrack"),
@@ -30,6 +30,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
   const widthPx = trackWidth * (width / 100);
   const leftPerc = (start / originalDuration) * 100;
   const left = trackWidth * (leftPerc / 100);
+  const msPerPixel = originalDuration / trackWidth;
 
   // TODO: esc key should cancel any dragging
 
@@ -162,8 +163,6 @@ const TrackItem: React.FC<TrackItemProps> = ({
     // set live start and end
     const { node, x, deltaX, lastX } = data;
 
-    const msPerPixel = originalDuration / trackWidth;
-
     console.info("ondragstop", x, msPerPixel);
 
     const newStart = Math.floor(x * msPerPixel);
@@ -187,7 +186,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
       handle=".itemHandle"
       defaultPosition={{ x: left, y: 0 }}
       position={null}
-      grid={[25, 25]}
+      grid={[5, 5]}
       scale={1}
       // onStart={this.handleStart}
       // onDrag={this.handleDrag}
@@ -201,34 +200,47 @@ const TrackItem: React.FC<TrackItemProps> = ({
       onMouseDown={() => handleClick(id)}
       onStop={onDragStop}
     >
-      <div
-        style={{
-          // left: `${left}%`, // conflicts with drag?
-          width: `${width}%`,
+      <Resizable
+        style={{ position: "absolute" }}
+        grid={[1, 1]}
+        defaultSize={{
+          width: widthPx,
+          height: trackHeight,
         }}
+        minHeight={trackHeight}
+        maxHeight={trackHeight}
       >
         <div
-          className="leftHandle"
-          onMouseDown={leftHandleDown}
-          onMouseUp={leftHandleUp}
-          // onMouseEnter={leftHandleEnter}
-          // onMouseLeave={leftHandleLeave}
-        ></div>
-        <div
-          className="itemHandle"
-          //   onMouseDown={itemHandleDown}
-          //   onMouseUp={itemHandleUp}
-          //   onMouseEnter={itemHandleEnter}
-          //   onMouseLeave={itemHandleLeave}
+          style={
+            {
+              // left: `${left}%`, // conflicts with drag?
+              // width: `${width}%`,
+            }
+          }
         >
-          <span className="name">{track.name}</span>
+          <div
+            className="leftHandle"
+            onMouseDown={leftHandleDown}
+            onMouseUp={leftHandleUp}
+            // onMouseEnter={leftHandleEnter}
+            // onMouseLeave={leftHandleLeave}
+          ></div>
+          <div
+            className="itemHandle"
+            //   onMouseDown={itemHandleDown}
+            //   onMouseUp={itemHandleUp}
+            //   onMouseEnter={itemHandleEnter}
+            //   onMouseLeave={itemHandleLeave}
+          >
+            <span className="name">{track.name}</span>
+          </div>
+          <div
+            className="rightHandle"
+            onMouseDown={rightHandleDown}
+            onMouseUp={rightHandleUp}
+          ></div>
         </div>
-        <div
-          className="rightHandle"
-          onMouseDown={rightHandleDown}
-          onMouseUp={rightHandleUp}
-        ></div>
-      </div>
+      </Resizable>
     </Draggable>
   );
 };
