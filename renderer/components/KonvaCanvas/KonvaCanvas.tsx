@@ -95,7 +95,7 @@ const Video = ({
   }, [innerWidth, innerHeight]);
 
   const zoomIn = (zoomFactor, zoomPoint, easing) => {
-    console.info("zoomIn", zoomFactor, zoomPoint);
+    // console.info("zoomIn", zoomFactor, zoomPoint);
     setZoomedIn(true);
 
     imageRef.current.to({
@@ -111,7 +111,7 @@ const Video = ({
   };
 
   const zoomOut = (easing) => {
-    console.info("zoomOut");
+    // console.info("zoomOut");
     setZoomedIn(false);
 
     imageRef.current.to({
@@ -297,13 +297,13 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
         mediaRecorderOptions
       );
 
-      mediaRecorder.addEventListener("start", function (event) {
-        console.info("recorder start", event);
-      });
+      // mediaRecorder.addEventListener("start", function (event) {
+      //   console.info("recorder start", event);
+      // });
 
-      mediaRecorder.addEventListener("pause", function (event) {
-        console.info("recorder pause", event);
-      });
+      // mediaRecorder.addEventListener("pause", function (event) {
+      //   console.info("recorder pause", event);
+      // });
 
       // mediaRecorder.addEventListener("resume", function (event) {
       //   console.info("recorder resume", event);
@@ -318,7 +318,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
       // });
 
       mediaRecorder.addEventListener("stop", function (event) {
-        console.info("recorder stop", event);
+        // console.info("recorder stop", event);
         // stream.getTracks().forEach(stream => stream.stop());
       });
 
@@ -344,11 +344,11 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
           const arrayBuffer = await videoBlob.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
 
-          console.info(
-            "save-transformed-blob",
-            arrayBuffer.byteLength,
-            buffer.length
-          );
+          // console.info(
+          //   "save-transformed-blob",
+          //   arrayBuffer.byteLength,
+          //   buffer.length
+          // );
 
           ipcRenderer.sendSync("save-transformed-blob", {
             buffer,
@@ -369,7 +369,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
           clearInterval(recordInterval);
           completed = true;
           mediaRecorder.stop();
-          console.info("completed");
+          // console.info("completed");
           // saveVideoBlob();
           ipcRenderer.sendSync("combine-blobs");
         }, elapsed - originalDuration);

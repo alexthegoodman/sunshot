@@ -13,6 +13,7 @@ import {
 import NumberField from "../NumberField/NumberField";
 import SelectField from "../SelectField/SelectField";
 import { FlexForm } from "../SharedStyles/SharedStyles";
+import SliderField from "../SliderField/SliderField";
 
 const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
   trackData = null,
@@ -32,7 +33,7 @@ const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
         Zoom Properties
       </h1>
       <FlexForm>
-        <NumberField
+        {/* <NumberField
           id="start"
           label="Start"
           value={trackData.start}
@@ -49,13 +50,22 @@ const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
             const end = parseInt(e.target.value);
             updateTrack("end", end);
           }}
-        />
-        <NumberField
+        /> */}
+        {/* <NumberField
           id="zoomFactor"
           label="Zoom"
           value={trackData.zoomFactor}
           onChange={(e) => {
             const zoomFactor = parseInt(e.target.value);
+            updateTrack("zoomFactor", zoomFactor);
+          }}
+        /> */}
+        <SliderField
+          id="zoomFactor"
+          label="Zoom"
+          value={trackData.zoomFactor}
+          onChange={(e) => {
+            const zoomFactor = parseFloat(e.target.value);
             updateTrack("zoomFactor", zoomFactor);
           }}
         />
