@@ -220,6 +220,7 @@ const Video = ({
       width={size.width}
       height={size.height}
       draggable
+      cornerRadius={10}
     />
   );
 };
@@ -231,8 +232,10 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   originalCapture25 = null,
   sourceData = null,
 }) => {
-  const [{ zoomTracks, currentTime, playing, stopped, exporting }, dispatch] =
-    useEditorContext();
+  const [
+    { videoTrack, zoomTracks, currentTime, playing, stopped, exporting },
+    dispatch,
+  ] = useEditorContext();
   const stageRef = React.useRef(null);
   const layerRef = React.useRef(null);
 
@@ -396,15 +399,8 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
               fillRadialGradientStartPoint={{ x: 0, y: 0 }}
               fillRadialGradientStartRadius={0}
               fillRadialGradientEndPoint={{ x: 0, y: 0 }}
-              fillRadialGradientEndRadius={3840 / 2}
-              fillRadialGradientColorStops={[
-                0,
-                "red",
-                0.5,
-                "yellow",
-                1,
-                "blue",
-              ]}
+              fillRadialGradientEndRadius={width25}
+              fillRadialGradientColorStops={videoTrack.gradient}
             ></Rect>
             <Rect
               x={width25 / 2 - innerWidth / 2}

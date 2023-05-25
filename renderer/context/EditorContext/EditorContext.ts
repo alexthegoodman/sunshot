@@ -58,7 +58,9 @@ export interface Track {
   end: number;
 }
 
-export interface VideoTrack extends Track {}
+export interface VideoTrack extends Track {
+  gradient: any;
+}
 
 export interface ZoomTrack extends Track {
   zoomFactor: number;

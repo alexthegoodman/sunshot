@@ -23,7 +23,7 @@ const SliderField: React.FC<SliderFieldProps> = ({
         <label
           className="spectrum-FieldLabel spectrum-FieldLabel--sizeL spectrum-Slider-label"
           id="spectrum-Slider-label-1"
-          htmlFor="spectrum-Slider-input-1"
+          htmlFor={id}
           style={{ minWidth: "50px" }}
         >
           {label}
@@ -34,7 +34,7 @@ const SliderField: React.FC<SliderFieldProps> = ({
           className="spectrum-Slider-value"
           role="textbox"
           aria-readonly="true"
-          aria-labelledby="spectrum-Slider-label-1"
+          aria-labelledby={id}
           style={{ minWidth: "30px" }}
         >
           {props.value}
@@ -48,7 +48,7 @@ const SliderField: React.FC<SliderFieldProps> = ({
               step="0.1"
               min="1"
               max="5"
-              id="spectrum-Slider-input-1"
+              id={id}
               {...props}
             />
           </div>

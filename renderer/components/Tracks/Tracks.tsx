@@ -14,6 +14,7 @@ import { styled } from "styled-components";
 import TrackItem from "../TrackItem/TrackItem";
 import { motion } from "framer-motion";
 import { useElementSize } from "usehooks-ts";
+import { gradients } from "../VideoProperties/VideoProperties";
 
 const TracksContainer = styled.section`
   position: relative;
@@ -180,6 +181,7 @@ const Tracks: React.FC<TracksProps> = ({
         name: "Video Track",
         start: 0,
         end: originalDuration,
+        gradient: gradients[0].konvaProps,
       };
 
       console.info("initalVideoTrack", initalVideoTrack);
