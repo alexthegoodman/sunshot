@@ -23,10 +23,16 @@ function Editor() {
   // const [originalCapture25, setOriginalCapture25] = React.useState(null); // 25% of original capture
   const [originalDuration, setOriginalDuration] = React.useState(null);
   const [sourceData, setSourceData] = React.useState(null);
+  const [resolution, setResolution] = React.useState(null);
 
   useEffect(() => {
-    const { currentProjectId, mousePositions, originalCapture, sourceData } =
-      ipcRenderer.sendSync("get-project-data");
+    const {
+      currentProjectId,
+      mousePositions,
+      originalCapture,
+      sourceData,
+      resolution,
+    } = ipcRenderer.sendSync("get-project-data");
 
     // do not repeat save mouse positions or original capture
     // in the saved context data
@@ -40,7 +46,8 @@ function Editor() {
       currentProjectId,
       mousePositions,
       JSON.parse(sourceData),
-      duration
+      duration,
+      resolution
     );
 
     setPositions(mousePositions);
@@ -48,6 +55,7 @@ function Editor() {
     // setOriginalCapture25(originalCapture25);
     setOriginalDuration(duration);
     setSourceData(JSON.parse(sourceData));
+    setResolution(resolution);
   }, []);
 
   return (
@@ -71,6 +79,7 @@ function Editor() {
                 originalDuration={originalDuration}
                 originalCapture={originalCapture}
                 sourceData={sourceData}
+                resolution={resolution}
                 // originalCapture25={originalCapture25}
               />
               <NoSSRTracks

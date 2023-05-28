@@ -301,6 +301,16 @@ ipcMain.on("get-project-data", (event, args) => {
     savePath + `/projects/${currentProjectId}/originalCapture.webm`
   );
 
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.workAreaSize;
+
+  console.info("primaryDisplay", width, height);
+
+  let resolution = "4k";
+  if (width <= 1920 && height <= 1080) {
+    resolution = "hd";
+  }
+
   // const originalCapture25 = fs.readFileSync(
   //   savePath + `/projects/${currentProjectId}/originalCapture25.webm`
   // );
@@ -310,6 +320,7 @@ ipcMain.on("get-project-data", (event, args) => {
     mousePositions,
     originalCapture,
     sourceData,
+    resolution,
     // originalCapture25,
   };
 });

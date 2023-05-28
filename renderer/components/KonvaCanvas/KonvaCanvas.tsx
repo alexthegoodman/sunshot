@@ -231,6 +231,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   originalDuration = null,
   originalCapture25 = null,
   sourceData = null,
+  resolution = null,
 }) => {
   const [
     { videoTrack, zoomTracks, currentTime, playing, stopped, exporting },
@@ -246,8 +247,10 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
   // const innerWidth = width25 * 0.8;
   // const innerHeight = height25 * 0.8;
 
-  const innerWidth = sourceData.width / divider;
-  const innerHeight = sourceData.height / divider;
+  // get resolution, if hd then divvide by 2
+  const innerDivider = resolution === "hd" ? divider / 2 : divider;
+  const innerWidth = sourceData.width / innerDivider;
+  const innerHeight = sourceData.height / innerDivider;
 
   // console.info("ref", stageRef, layerRef);
 
