@@ -243,8 +243,11 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
 
   const width25 = 3840 / divider; // divider of 2 is HD, 1.5 is 2K, 1 is 4K // even 1.5 seems to get cut off
   const height25 = 2160 / divider;
-  const innerWidth = width25 * 0.8;
-  const innerHeight = height25 * 0.8;
+  // const innerWidth = width25 * 0.8;
+  // const innerHeight = height25 * 0.8;
+
+  const innerWidth = sourceData.width / divider;
+  const innerHeight = sourceData.height / divider;
 
   // console.info("ref", stageRef, layerRef);
 
@@ -400,7 +403,7 @@ const KonvaCanvas: React.FC<KonvaCanvasProps> = ({
               fillRadialGradientStartRadius={0}
               fillRadialGradientEndPoint={{ x: 0, y: 0 }}
               fillRadialGradientEndRadius={width25}
-              fillRadialGradientColorStops={videoTrack.gradient}
+              fillRadialGradientColorStops={videoTrack?.gradient}
             ></Rect>
             <Rect
               x={width25 / 2 - innerWidth / 2}

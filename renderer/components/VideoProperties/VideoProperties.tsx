@@ -52,6 +52,7 @@ const GradientGrid = styled.section`
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 15px;
+  margin-top: 15px;
 
   .gradient {
     width: 50px;

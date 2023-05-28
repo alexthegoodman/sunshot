@@ -45,6 +45,8 @@ function Home() {
           mandatory: {
             chromeMediaSource: "desktop",
             chromeMediaSourceId: sourceId,
+            width: sourceData.width,
+            height: sourceData.height,
             // 4k size default
             // minWidth: 3840,
             // maxWidth: 3840,
