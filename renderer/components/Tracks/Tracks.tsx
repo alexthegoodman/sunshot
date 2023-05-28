@@ -106,6 +106,27 @@ const TracksContainer = styled.section`
             height: 100%;
           }
 
+          .ctrls {
+            position: absolute;
+            top: 3px;
+            right: 18px;
+
+            button {
+              border: none;
+              outline: none;
+              background: rgba(0, 0, 0, 0.2);
+              border-radius: 50%;
+              box-shadow: none;
+              cursor: pointer;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 20px;
+              height: 20px;
+              color: white;
+            }
+          }
+
           .name {
             display: block;
             margin: 4px;

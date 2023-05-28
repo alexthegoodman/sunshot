@@ -4,6 +4,7 @@ import { TrackItemProps } from "./TrackItem.d";
 
 import Draggable from "react-draggable";
 import { Resizable } from "re-resizable";
+import { useEditorContext } from "../../context/EditorContext/EditorContext";
 
 let listenerAttached = 0;
 
@@ -16,6 +17,8 @@ const TrackItem: React.FC<TrackItemProps> = ({
   handleClick = () => console.info("handleClick"),
   updateTrack = () => console.info("updateTrack"),
 }) => {
+  const [{ zoomTracks, selectedTrack }, dispatch] = useEditorContext();
+
   const { id, start, end, zoomFactor } = track;
 
   const [translating, setTranslating] = React.useState(false);
@@ -197,6 +200,14 @@ const TrackItem: React.FC<TrackItemProps> = ({
     }
   };
 
+  const handleTrackDelete = () => {
+    console.info("handleTrackDelete", track.id);
+
+    const newZoomTracks = zoomTracks.filter((t) => t.id !== track.id);
+    dispatch({ key: "zoomTracks", value: newZoomTracks });
+    dispatch({ key: "selectedTrack", value: null });
+  };
+
   return (
     <Draggable
       axis="x"
@@ -253,6 +264,11 @@ const TrackItem: React.FC<TrackItemProps> = ({
             //   onMouseLeave={itemHandleLeave}
           >
             <span className="name">{track.name}</span>
+          </div>
+          <div className="ctrls">
+            <button onClick={handleTrackDelete}>
+              <i className="ph ph-x"></i>
+            </button>
           </div>
           <div
             className="rightHandle"

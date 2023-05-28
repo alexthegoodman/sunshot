@@ -57,6 +57,10 @@ export default function Document() {
           rel="stylesheet"
           href="lib/@spectrum-css/textfield/dist/index-vars.css"
         />
+        <link
+          rel="stylesheet"
+          href="lib/@phosphor-icons/web/src/regular/style.css"
+        />
       </Head>
       <body style={{ margin: 0 }}>
         <Main />
