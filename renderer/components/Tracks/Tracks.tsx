@@ -64,6 +64,7 @@ const TracksContainer = styled.section`
     .track {
       background-color: transparent;
       margin-bottom: 10px;
+      position: relative;
 
       .trackInner {
         position: relative;
@@ -174,6 +175,33 @@ const TracksContainer = styled.section`
           }
         }
       }
+
+      .trackCtrls {
+        position: absolute;
+        top: 0;
+        right: 0px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        button {
+          width: 25px;
+          height: 25px;
+          background: #73d84b;
+          border: none;
+          outline: none;
+          border-radius: 50%;
+          color: white;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.15);
+        }
+      }
     }
   }
 `;
@@ -195,8 +223,9 @@ const Tracks: React.FC<TracksProps> = ({
   const numTicks = 10;
   const tickSpace = seconds / numTicks;
 
+  // for testing only
   React.useEffect(() => {
-    if (originalDuration) {
+    if (originalDuration && !zoomTracks) {
       const initalVideoTrack: VideoTrack = {
         id: randomUUID(),
         name: "Video Track",
@@ -260,6 +289,19 @@ const Tracks: React.FC<TracksProps> = ({
     dispatch({ key: "zoomTracks", value: updatedZoomTracks });
   };
 
+  const handleTrackAdd = () => {
+    const newTrack: ZoomTrack = {
+      id: randomUUID(),
+      name: "Zoom Track",
+      start: 0,
+      end: 3000,
+      zoomFactor: 2,
+      easing: KonvaEasings.EaseInOut,
+    };
+
+    dispatch({ key: "zoomTracks", value: [...zoomTracks, newTrack] });
+  };
+
   return (
     <TracksContainer>
       <div className={"tracksInner"}>
@@ -303,6 +345,11 @@ const Tracks: React.FC<TracksProps> = ({
               );
             })}
           </motion.div>
+          <div className="trackCtrls">
+            <button onClick={handleTrackAdd} title="Add Zoom Track">
+              <i className="ph ph-plus"></i>
+            </button>
+          </div>
         </div>
       </div>
     </TracksContainer>

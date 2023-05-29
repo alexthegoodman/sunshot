@@ -266,7 +266,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
             <span className="name">{track.name}</span>
           </div>
           <div className="ctrls">
-            <button onClick={handleTrackDelete}>
+            <button onClick={handleTrackDelete} title="Remove Zoom Track">
               <i className="ph ph-x"></i>
             </button>
           </div>
