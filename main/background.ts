@@ -4,6 +4,7 @@ import { createWindow } from "./helpers";
 import * as fs from "fs";
 import { randomUUID } from "crypto";
 import Konva from "konva";
+import fetch from "electron-fetch";
 
 const { desktopCapturer } = require("electron");
 const path = require("path");
@@ -26,14 +27,14 @@ const ffprobePath = require("ffprobe-static").path.replace(
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
+const isProd: boolean = process.env.NODE_ENV === "production";
+
 const savePath =
   process.env.NODE_ENV === "production" ? app.getPath("appData") : __dirname;
-
+const userDataPath = app.getPath("userData");
 const tempPath = app.getPath("temp");
 
-// require("@electron/remote/main").initialize();
-
-const isProd: boolean = process.env.NODE_ENV === "production";
+const apiUrl = isProd ? "https://sunshot.app" : "http://localhost:3000";
 
 if (isProd) {
   serve({ directory: "app" });
@@ -43,11 +44,64 @@ if (isProd) {
 
 let mainWindow = null;
 let editorWindow = null;
+let licenseWindow = null;
 let currentProjectId = null;
 
 (async () => {
   await app.whenReady();
 
+  // check if license key exists
+  const licenseKeyExists = fs.existsSync(userDataPath + "/licenseKey.txt");
+
+  if (!licenseKeyExists) {
+    console.info("License key not found", userDataPath);
+    openLicenseKeyInput();
+    return;
+  }
+
+  // get stored license key from userData
+  const licenseKey = fs.readFileSync(userDataPath + "/licenseKey.txt", "utf8");
+
+  console.info("License key found", licenseKey, userDataPath);
+
+  // verify license key by calling API
+  const response = await fetch(apiUrl + "/licenses/" + licenseKey, {
+    method: "GET",
+  });
+
+  const data = await response.json();
+
+  console.info("license data", data);
+
+  // open necessary window
+  if (response.ok && data.key === licenseKey) {
+    console.info("License key verified");
+    openSourcePicker();
+  } else {
+    console.warn("License key invalid");
+    openLicenseKeyInput();
+  }
+})();
+
+app.on("window-all-closed", () => {
+  app.quit();
+});
+
+// ipcMain.on("ping-pong", (event, arg) => {
+//   event.sender.send("ping-pong", `[ipcMain] "${arg}" received asynchronously.`);
+// });
+
+// save license
+ipcMain.on("save-license-key", (event, { licenseKey }) => {
+  console.info("save-license-key", licenseKey);
+
+  fs.writeFileSync(userDataPath + "/licenseKey.txt", licenseKey);
+
+  event.returnValue = true;
+});
+
+// open source picker
+const openSourcePicker = async () => {
   mainWindow = createWindow("main", {
     width: 500,
     height: 750,
@@ -62,15 +116,30 @@ let currentProjectId = null;
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
   }
-})();
+};
 
-app.on("window-all-closed", () => {
-  app.quit();
+const openLicenseKeyInput = async () => {
+  licenseWindow = createWindow("license", {
+    width: 700,
+    height: 300,
+  });
+
+  // mainWindow.setMenu(null);
+  // mainWindow.setResizable(false);
+
+  if (isProd) {
+    await licenseWindow.loadURL("app://./license.html");
+  } else {
+    const port = process.argv[2];
+    await licenseWindow.loadURL(`http://localhost:${port}/license`);
+  }
+};
+
+ipcMain.on("open-source-picker", async (event, arg) => {
+  console.info("open-source-picker", arg);
+  openSourcePicker();
+  event.returnValue = true;
 });
-
-// ipcMain.on("ping-pong", (event, arg) => {
-//   event.sender.send("ping-pong", `[ipcMain] "${arg}" received asynchronously.`);
-// });
 
 ipcMain.on("open-editor", async (event, { projectId }) => {
   editorWindow = createWindow("editor", {
@@ -84,12 +153,22 @@ ipcMain.on("open-editor", async (event, { projectId }) => {
     const port = process.argv[2];
     await editorWindow.loadURL(`http://localhost:${port}/editor`);
   }
+
+  event.returnValue = true;
 });
 
 ipcMain.on("close-source-picker", (event, arg) => {
   console.info("close-source-picker", arg);
 
   mainWindow.close();
+
+  event.returnValue = true;
+});
+
+ipcMain.on("close-license-key-input", (event, arg) => {
+  console.info("close-license-key-input", arg);
+
+  licenseWindow.close();
 
   event.returnValue = true;
 });
