@@ -47,6 +47,8 @@ function Home() {
             chromeMediaSourceId: sourceId,
             width: sourceData.width,
             height: sourceData.height,
+            minFrameRate: 60,
+            maxFrameRate: 60,
             // 4k size default
             // minWidth: 3840,
             // maxWidth: 3840,

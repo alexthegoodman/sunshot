@@ -2,6 +2,7 @@
 
 - Electron / Next.js
 - Windows Only (for now)
+- Uses sunshot-recorder and sunshot-creator C++ Native Node Modules
 
 ## Getting Started
 
@@ -32,6 +33,10 @@ May need to install GTK 2: https://github.com/Automattic/node-canvas/wiki/Instal
 `npm run build`
 ```
 
+### Generate Code
+
+- `npx plop`
+
 ### Notes
 
 If you need any assistance with setup, feel free to add an Issue or email: alexthegoodman@gmail.com
@@ -51,5 +56,8 @@ input.txt format
 file 'file.webm'
 file 'file2.webm'
 ```
+
+Transforming getUserMedia video to workable mp4
+`ffmpeg -i input.webm -vf "fps=60" output.mp4`
 
 When working with @spectrum-css, copy needed files installed in node_modules to public/lib

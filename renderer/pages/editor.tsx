@@ -16,11 +16,14 @@ import Properties from "../components/Properties/Properties";
 import NoSSRCanvas from "../components/NoSSRCanvas/NoSSRCanvas";
 import Script from "next/script";
 import NoSSRTracks from "../components/NoSSRTracks/NoSSRTracks";
+import SunCanvas from "../components/SunCanvas/SunCanvas";
+import NoSSRSun from "../components/NoSSRSun/NoSSRSun";
+import NoSSRCanvas2 from "../components/NoSSRCanvas2/NoSSRCanvas2";
 
 function Editor() {
+  const [projectId, setProjectId] = React.useState(null);
   const [positions, setPositions] = React.useState(null);
   const [originalCapture, setOriginalCapture] = React.useState(null);
-  // const [originalCapture25, setOriginalCapture25] = React.useState(null); // 25% of original capture
   const [originalDuration, setOriginalDuration] = React.useState(null);
   const [sourceData, setSourceData] = React.useState(null);
   const [resolution, setResolution] = React.useState(null);
@@ -50,9 +53,9 @@ function Editor() {
       resolution
     );
 
+    setProjectId(currentProjectId);
     setPositions(mousePositions);
     setOriginalCapture(originalCapture);
-    // setOriginalCapture25(originalCapture25);
     setOriginalDuration(duration);
     setSourceData(JSON.parse(sourceData));
     setResolution(resolution);
@@ -74,13 +77,23 @@ function Editor() {
                 // originalCapture={originalCapture}
                 originalDuration={originalDuration}
               /> */}
-              <NoSSRCanvas
+              {/* <NoSSRCanvas
                 positions={positions}
                 originalDuration={originalDuration}
                 originalCapture={originalCapture}
                 sourceData={sourceData}
                 resolution={resolution}
                 // originalCapture25={originalCapture25}
+              /> */}
+              {/* <NoSSRSun
+                projectId={projectId}
+                sourceData={sourceData}
+                originalCapture={originalCapture}
+              /> */}
+              <NoSSRCanvas2
+                projectId={projectId}
+                sourceData={sourceData}
+                originalCapture={originalCapture}
               />
               <NoSSRTracks
                 positions={positions}

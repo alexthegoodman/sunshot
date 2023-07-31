@@ -217,10 +217,11 @@ const Video = ({
       x={0}
       y={0}
       // stroke="red"
-      width={size.width}
-      height={size.height}
+      width={innerWidth}
+      height={innerHeight}
       draggable
       cornerRadius={10}
+      // imageSmoothingEnabled={false}
     />
   );
 };
