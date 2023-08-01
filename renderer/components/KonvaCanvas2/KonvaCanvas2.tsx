@@ -14,15 +14,15 @@ const VideoCtrls = styled.section`
   padding: 15px 0;
 `;
 
+var anim = null;
+var layer = null;
+var playing = false;
 const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
   projectId = null,
   sourceData = null,
   originalCapture = null,
 }) => {
-  const [
-    { videoTrack, zoomTracks, currentTime, playing, stopped, exporting },
-    dispatch,
-  ] = useEditorContext();
+  const [{ videoTrack, zoomTracks }, dispatch] = useEditorContext();
 
   const ratio = sourceData ? sourceData.height / sourceData.width : 0;
   const width = 1200;
@@ -42,18 +42,14 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
     return element;
   }, [originalCapture]);
 
-  var anim = null;
   const initCanvas = async () => {
-    // const videoElement = document.createElement("video");
-    // videoElement.src = "/originalCapture.webm";
-
     var stage = new Konva.Stage({
       container: "container",
       width: width,
       height: height,
     });
 
-    var layer = new Konva.Layer();
+    layer = new Konva.Layer();
     stage.add(layer);
 
     var gradientRect = new Konva.Rect({
@@ -106,27 +102,41 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
 
     layer.add(group);
 
-    anim = new Konva.Animation(function () {
-      // do nothing, animation just need to update the layer
-    }, layer);
+    // anim = new Konva.Animation(function () {
+    //   // do nothing, animation just need to update the layer
+    // }, layer);
+    playing = true;
   };
 
   const playVideo = () => {
     videoElement.play();
-    anim.start();
+    // anim.start();
   };
 
   const stopVideo = () => {
     videoElement.pause();
     videoElement.currentTime = 0;
+
     // timeout required to animate to 0
     setTimeout(() => {
-      anim.stop();
+      //   anim.stop();
+      playing = false;
     }, 1000);
   };
 
   React.useEffect(() => {
     initCanvas();
+
+    const frameTiming = 1000 / 60;
+    const playInterval = setInterval(() => {
+      if (playing) {
+        layer.draw();
+      }
+    }, frameTiming);
+
+    return () => {
+      clearInterval(playInterval);
+    };
   }, []);
 
   return (
