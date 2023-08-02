@@ -93,6 +93,7 @@ function Editor() {
               <NoSSRCanvas2
                 projectId={projectId}
                 sourceData={sourceData}
+                positions={positions}
                 originalCapture={originalCapture}
               />
               <NoSSRTracks
