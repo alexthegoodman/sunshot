@@ -250,7 +250,7 @@ const Tracks: React.FC<TracksProps> = ({
           name: "Zoom Track",
           start: 5000,
           end: 12000,
-          zoomFactor: 2,
+          zoomFactor: 0.5,
           easing: KonvaEasings.EaseInOut,
         },
         {
@@ -258,7 +258,7 @@ const Tracks: React.FC<TracksProps> = ({
           name: "Zoom Track",
           start: 16000,
           end: 25000,
-          zoomFactor: 2,
+          zoomFactor: 0.5,
           easing: KonvaEasings.EaseInOut,
         },
       ];

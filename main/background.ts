@@ -1,3 +1,5 @@
+// console.log("PATH", process.env.PATH);
+
 import { app, ipcMain, screen } from "electron";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
@@ -10,6 +12,7 @@ const { desktopCapturer } = require("electron");
 const path = require("path");
 
 const { print, setTargetWindow } = require("sunshot-recorder");
+const { startWorker } = require("sunshot-creator");
 const { spawn } = require("child_process");
 
 // https://alexandercleasby.dev/blog/use-ffmpeg-electron
@@ -201,7 +204,7 @@ ipcMain.on("save-source-data", (event, { windowTitle }) => {
 
   fs.writeFileSync(
     savePath + `/projects/${currentProjectId}/sourceData.json`,
-    JSON.stringify(sourceData)
+    sourceData
   );
 
   event.returnValue = sourceData;
@@ -404,119 +407,47 @@ ipcMain.on("get-project-data", (event, args) => {
   };
 });
 
-// ipcMain.on("export-video", (event, args) => {
-//   console.info("export-video", args);
+ipcMain.on("export-video", (event, args) => {
+  console.info("export-video", args);
 
-//   const mousePositions = JSON.parse(
-//     fs.readFileSync(
-//       savePath + `/projects/${currentProjectId}/mousePositions.json`
-//     ) as unknown as string
-//   );
+  // use fluent-ffmpeg to convert to 60fps mp4
+  ffmpeg(savePath + `/projects/${currentProjectId}/originalCapture.webm`)
+    .fps(60)
+    .toFormat("mp4")
+    .on("end", function () {
+      console.log("File has been converted succesfully");
 
-//   const sourceData = JSON.parse(
-//     fs.readFileSync(
-//       savePath + `/projects/${currentProjectId}/sourceData.json`
-//     ) as unknown as string
-//   );
-
-//   const originalCapture = fs.readFileSync(
-//     savePath + `/projects/${currentProjectId}/originalCapture.webm`
-//   );
-
-//   const divider = 1;
-//   const width25 = 3840 / divider;
-//   const height25 = 2160 / divider;
-//   const innerWidth = width25 * 0.8;
-//   const innerHeight = height25 * 0.8;
-
-//   // create Konva canvas similar to editor
-//   const stage = new Konva.Stage({
-//     container: null,
-//     width: width25,
-//     height: height25,
-//   });
-
-//   const layer = new Konva.Layer();
-
-//   // TODO: how?
-//   var imageObj = new Image();
-//   imageObj.src =
-//     savePath + `/projects/${currentProjectId}/originalCapture.webm`;
-
-//   const video = new Konva.Image({
-//     image: imageObj,
-//     width: innerWidth,
-//     height: innerHeight,
-//     x: (width25 - innerWidth) / 2,
-//     y: (height25 - innerHeight) / 2,
-//   });
-// });
-
-// unused ffmpeg implementation
-// ipcMain.on("get-transformed-video", (event, { zoomTracks }) => {
-//   console.info("get-transformed-video", currentProjectId, zoomTracks);
-
-//   // const mousePositions = JSON.parse(
-//   //   fs.readFileSync(
-//   //     savePath + `/projects/${currentProjectId}/mousePositions.json`
-//   //   ) as unknown as string
-//   // );
-
-//   // const originalCapture = fs.readFileSync(
-//   //   savePath + `/projects/${currentProjectId}/originalCapture.webm`
-//   // );
-
-//   const inputVideoPath = path.join(
-//     savePath,
-//     `/projects/${currentProjectId}/originalCapture.webm`
-//   );
-//   const outputVideoPath = path.join(
-//     savePath,
-//     `/projects/${currentProjectId}/transformedCapture.webm`
-//   );
-
-//   // Define the cubic-bezier control points
-//   const easing = "cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-
-//   const gradientStops = [
-//     { color: "#000000", position: 0 },
-//     { color: "#FFFFFF", position: 1 },
-//   ];
-
-//   // Apply zoom and pan effect with cubic-bezier easing
-//   ffmpeg(inputVideoPath)
-//     .videoCodec("libvpx-vp9")
-//     .noAudio()
-//     .complexFilter([
-//       // `[0:v]zoompan=z='if(lte(zoom,1.0),1.5,max(1.001,zoom-0.0015))':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=100`,
-//       // `zoompan=z='min(zoom+0.0015,1.5)':d=700:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=100`,
-//       // `zoompan=z=pzoom+0.01:x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1280x720:fps=30`,
-//       // Add a gradient background
-//       `[0:v]drawbox=c=gradient:w=iw:h=ih:t=0.5:s=${gradientStops
-//         .map((s) => `${s.color}@${s.position}`)
-//         .join(":")}[bg]`,
-//       // Apply zoom and pan effect with easing
-//       // `[bg]zoompan=z=pzoom+0.01:x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1280x720:fps=30[zoomed]`,
-//       // // Overlay the zoomed video onto the gradient background
-//       // `[zoomed][bg]overlay=(W-w)/2:(H-h)/2`,
-//     ])
-//     .output(outputVideoPath)
-//     .on("start", (commandLine) => {
-//       console.log("Started FFMpeg with command:", commandLine);
-//     })
-//     .on("progress", (progress) => {
-//       console.log("Processing: " + JSON.stringify(progress));
-//     })
-//     .on("end", () => {
-//       console.log("Finished processing the video");
-//     })
-//     .on("error", (error) => {
-//       console.error(
-//         "An error occurred while processing the video:",
-//         error.message
-//       );
-//     })
-//     .run();
-
-//   event.returnValue = {};
-// });
+      startWorker(
+        JSON.stringify({
+          duration: args.duration,
+          positionsFile:
+            savePath + `/projects/${currentProjectId}/mousePositions.json`,
+          sourceFile:
+            savePath + `/projects/${currentProjectId}/sourceData.json`,
+          inputFile: savePath + `/projects/${currentProjectId}/60fps.mp4`,
+          outputFile: savePath + `/projects/${currentProjectId}/output.mp4`,
+          zoomInfo: args.zoomInfo,
+          // zoomInfo: [
+          //   {
+          //     start: 1000,
+          //     end: 6000,
+          //     zoom: 0.5,
+          //   },
+          //   {
+          //     start: 9000,
+          //     end: 14000,
+          //     zoom: 0.6,
+          //   },
+          // ],
+        }),
+        (progress) => {
+          console.log("Progress:", progress);
+          event.sender.send("export-video-progress", progress);
+        }
+      );
+    })
+    .on("error", function (err) {
+      console.error("Error:", err);
+    })
+    .save(savePath + `/projects/${currentProjectId}/60fps.mp4`);
+});

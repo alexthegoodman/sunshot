@@ -48,7 +48,7 @@ function Editor() {
       "project data",
       currentProjectId,
       mousePositions,
-      JSON.parse(sourceData),
+      sourceData,
       duration,
       resolution
     );
@@ -57,7 +57,7 @@ function Editor() {
     setPositions(mousePositions);
     setOriginalCapture(originalCapture);
     setOriginalDuration(duration);
-    setSourceData(JSON.parse(sourceData));
+    setSourceData(sourceData);
     setResolution(resolution);
   }, []);
 

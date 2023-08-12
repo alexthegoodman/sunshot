@@ -162,7 +162,7 @@ const TrackItem: React.FC<TrackItemProps> = ({
     setResizingRight(false);
   };
 
-  const onDragStop = (e, data) => {
+  const onDrag = (e, data) => {
     // set live start and end
     const { node, x, deltaX, lastX } = data;
 
@@ -183,18 +183,28 @@ const TrackItem: React.FC<TrackItemProps> = ({
     );
   };
 
-  const onResizeStop = (e, direction, ref, d) => {
+  const onResize = (e, side, ref, d) => {
     const { width, height } = ref.style;
     const newWidth = parseInt(width);
+    const direction = e.movementX > 0 ? "right" : "left";
 
-    if (direction === "left") {
-      //   const newStart = Math.floor((left + d.width) * msPerPixel);
-      //   updateTrack(track.id, "start", newStart);
+    console.info("side", side, direction);
+
+    if (side === "left") {
+      if (direction === "right") {
+        const newStart = Math.floor(
+          (left + Math.abs(e.movementX)) * msPerPixel
+        );
+        updateTrack(track.id, "start", newStart);
+      } else {
+        const newStart = Math.floor((left + e.movementX) * msPerPixel);
+        updateTrack(track.id, "start", newStart);
+      }
       // set to match glitch from resizable so bug doesnt bubble up
       // but it should not shorten from right side
-      const newEnd = Math.floor((left + newWidth) * msPerPixel);
-      updateTrack(track.id, "end", newEnd);
-    } else if (direction === "right") {
+      // const newEnd = Math.floor((left + newWidth) * msPerPixel);
+      // updateTrack(track.id, "end", newEnd);
+    } else if (side === "right") {
       const newEnd = Math.floor((left + newWidth) * msPerPixel);
       updateTrack(track.id, "end", newEnd);
     }
@@ -212,8 +222,9 @@ const TrackItem: React.FC<TrackItemProps> = ({
     <Draggable
       axis="x"
       handle=".itemHandle"
-      defaultPosition={{ x: left, y: 0 }}
-      position={null}
+      // defaultPosition={{ x: left, y: 0 }}
+      position={{ x: left, y: 0 }}
+      // disabled={true}
       grid={[5, 5]}
       scale={1}
       // onStart={this.handleStart}
@@ -226,7 +237,8 @@ const TrackItem: React.FC<TrackItemProps> = ({
       //   id={id}
       defaultClassName={"item"}
       onMouseDown={() => handleClick(id)}
-      onStop={onDragStop}
+      onDrag={onDrag}
+      // onStop={onDragStop}
     >
       <Resizable
         style={{ position: "absolute" }}
@@ -239,7 +251,8 @@ const TrackItem: React.FC<TrackItemProps> = ({
         maxHeight={trackHeight}
         minWidth={5}
         maxWidth={trackWidth}
-        onResizeStop={onResizeStop}
+        onResize={onResize}
+        // onResizeStop={onResizeStop}
       >
         <div
           style={

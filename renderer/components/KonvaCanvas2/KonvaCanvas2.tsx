@@ -5,6 +5,14 @@ import Konva from "konva";
 import { KonvaCanvas2Props } from "./KonvaCanvas2.d";
 import { useEditorContext } from "../../context/EditorContext/EditorContext";
 import { styled } from "styled-components";
+import { ipcRenderer } from "electron";
+
+const ProjectCtrls = styled.section`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 15px 0;
+`;
 
 const VideoCtrls = styled.section`
   display: flex;
@@ -208,8 +216,12 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
   };
 
   React.useEffect(() => {
+    // startup the canvas
     initCanvas();
 
+    // watch for playing state
+    // inside interval, to animate zooms
+    // works in tandem with playVideo()
     const frameTiming = 1000 / 60;
     let frameIndex = 0; // TODO: set according to currentTime
     const playInterval = setInterval(() => {
@@ -291,6 +303,7 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
       }
     }, frameTiming);
 
+    // cleanup
     return () => {
       clearInterval(playInterval);
       anim = null;
@@ -299,8 +312,34 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
     };
   }, []);
 
+  // listen for export events
+  React.useEffect(() => {
+    ipcRenderer.on("export-video-progress", (event, arg) => {
+      console.info("exporting video", arg);
+    });
+  }, []);
+
+  const exportVideo = () => {
+    ipcRenderer.send("export-video", {
+      duration: Math.round(videoElement.duration * 1000),
+      zoomInfo: zoomTracks.map((track) => ({
+        start: track.start,
+        end: track.end,
+        zoom: track.zoomFactor,
+      })),
+    });
+  };
+
   return (
     <>
+      <ProjectCtrls>
+        <button
+          className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM"
+          onClick={exportVideo}
+        >
+          Export
+        </button>
+      </ProjectCtrls>
       <div id="container"></div>
       <VideoCtrls>
         <button
