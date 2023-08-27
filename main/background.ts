@@ -200,11 +200,19 @@ ipcMain.on("get-sources", (event, arg) => {
 ipcMain.on("save-source-data", (event, { windowTitle }) => {
   // TODO: error handling
 
-  const sourceData = setTargetWindow(windowTitle);
+  let sourceData = setTargetWindow(windowTitle);
+
+  sourceData = JSON.parse(sourceData);
+
+  // get screen dpi scaling
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { scaleFactor } = primaryDisplay;
+
+  sourceData.scaleFactor = scaleFactor;
 
   fs.writeFileSync(
     savePath + `/projects/${currentProjectId}/sourceData.json`,
-    sourceData
+    JSON.stringify(sourceData)
   );
 
   event.returnValue = sourceData;

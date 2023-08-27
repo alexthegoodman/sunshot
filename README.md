@@ -60,4 +60,7 @@ file 'file2.webm'
 Transforming getUserMedia video to workable mp4
 `ffmpeg -i input.webm -vf "fps=60" output.mp4`
 
+Compressing video
+`ffmpeg -i input.mp4 -c:v libx264 -crf 23 output_compressed.mp4`
+
 When working with @spectrum-css, copy needed files installed in node_modules to public/lib
