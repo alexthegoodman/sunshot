@@ -1,6 +1,6 @@
 // console.log("PATH", process.env.PATH);
 
-import { app, ipcMain, screen } from "electron";
+import { app, ipcMain, screen, shell } from "electron";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
 import * as fs from "fs";
@@ -422,9 +422,15 @@ ipcMain.on("export-video", (event, args) => {
   ffmpeg(savePath + `/projects/${currentProjectId}/originalCapture.webm`)
     .fps(60)
     .toFormat("mp4")
+    .outputOptions(["-crf 5"])
+    .on("progress", function (progress) {
+      console.info("Processing 60FPS: " + progress.percent + "% done");
+      event.sender.send("export-video-pre-progress", progress.percent);
+    })
     .on("end", function () {
       console.log("File has been converted succesfully");
 
+      // generate presentation video
       startWorker(
         JSON.stringify({
           duration: args.duration,
@@ -435,27 +441,55 @@ ipcMain.on("export-video", (event, args) => {
           inputFile: savePath + `/projects/${currentProjectId}/60fps.mp4`,
           outputFile: savePath + `/projects/${currentProjectId}/output.mp4`,
           zoomInfo: args.zoomInfo,
-          // zoomInfo: [
-          //   {
-          //     start: 1000,
-          //     end: 6000,
-          //     zoom: 0.5,
-          //   },
-          //   {
-          //     start: 9000,
-          //     end: 14000,
-          //     zoom: 0.6,
-          //   },
-          // ],
         }),
         (progress) => {
-          console.log("Progress:", progress);
-          event.sender.send("export-video-progress", progress);
+          if (progress === -1) {
+            console.info("Finished generating presentation video");
+
+            // compression
+            ffmpeg(savePath + `/projects/${currentProjectId}/output.mp4`)
+              .videoCodec("libx264")
+              .outputOptions(["-crf 23"])
+              .on("progress", function (progress) {
+                console.info(
+                  "Compression Progress: " + progress.percent + "% done"
+                );
+                event.sender.send(
+                  "export-video-com-progress",
+                  progress.percent
+                );
+              })
+              .on("end", () => {
+                console.log("Compression finished.");
+
+                // delete huge video
+                fs.unlinkSync(
+                  savePath + `/projects/${currentProjectId}/output.mp4`
+                );
+
+                console.info("Finished exporting video");
+
+                // open folder containing video
+                // spawn("explorer", [savePath + `/projects/${currentProjectId}`]);
+                shell.showItemInFolder(
+                  savePath + `/projects/${currentProjectId}`
+                );
+              })
+              .on("error", (err) => {
+                console.error("Compression Error:", err);
+              })
+              .save(
+                savePath + `/projects/${currentProjectId}/output_compressed.mp4`
+              );
+          } else {
+            console.log("Gen Progress:", progress);
+            event.sender.send("export-video-gen-progress", progress);
+          }
         }
       );
     })
     .on("error", function (err) {
-      console.error("Error:", err);
+      console.error("60FPS Error:", err);
     })
     .save(savePath + `/projects/${currentProjectId}/60fps.mp4`);
 });

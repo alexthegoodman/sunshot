@@ -95,6 +95,7 @@ function Editor() {
                 sourceData={sourceData}
                 positions={positions}
                 originalCapture={originalCapture}
+                originalDuration={originalDuration}
               />
               <NoSSRTracks
                 positions={positions}

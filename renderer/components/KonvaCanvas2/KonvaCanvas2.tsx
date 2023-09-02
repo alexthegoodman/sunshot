@@ -22,6 +22,26 @@ const VideoCtrls = styled.section`
   padding: 15px 0;
 `;
 
+const ModalContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .spectrum-Modal {
+    width: 500px;
+    background-color: white;
+    padding: 15px 25px 25px 25px;
+  }
+`;
+
 var anim = null;
 var konvaLayer = null;
 var playing = false;
@@ -48,7 +68,14 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
   sourceData = null,
   positions = null,
   originalCapture = null,
+  originalDuration = null,
 }) => {
+  const [exportVideoOpen, setExportVideoOpen] = React.useState(false);
+  const [preprocessingProgress, setPreprocessingProgress] = React.useState(0);
+  const [generationProgress, setGenerationProgress] = React.useState(0);
+  const [compressionProgress, setCompressionProgress] = React.useState(0);
+  const [preprocessing, setPreprocessing] = React.useState(false);
+  const [exporting, setExporting] = React.useState(false);
   const [{ videoTrack, zoomTracks }, dispatch] = useEditorContext();
 
   const ratio = sourceData ? sourceData.height / sourceData.width : 0;
@@ -314,14 +341,26 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
 
   // listen for export events
   React.useEffect(() => {
-    ipcRenderer.on("export-video-progress", (event, arg) => {
-      console.info("exporting video", arg);
+    ipcRenderer.on("export-video-pre-progress", (event, arg) => {
+      console.info("preprocessing progress", arg);
+      // setPreprocessingProgress(arg);
+      setPreprocessing(true);
+    });
+    ipcRenderer.on("export-video-gen-progress", (event, arg) => {
+      console.info("generation progress", arg);
+      setPreprocessing(false);
+      setGenerationProgress(arg);
+    });
+    ipcRenderer.on("export-video-com-progress", (event, arg) => {
+      console.info("compression progress", arg);
+      setCompressionProgress(arg);
     });
   }, []);
 
   const exportVideo = () => {
+    setExporting(true);
     ipcRenderer.send("export-video", {
-      duration: Math.round(videoElement.duration * 1000),
+      duration: originalDuration,
       zoomInfo: zoomTracks.map((track) => ({
         start: track.start,
         end: track.end,
@@ -330,12 +369,76 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
     });
   };
 
+  const openExport = () => {
+    setExportVideoOpen(true);
+  };
+
   return (
     <>
+      {exportVideoOpen && (
+        <ModalContainer>
+          <div className="spectrum-Modal-wrapper">
+            <div className="spectrum-Modal is-open">
+              <div
+                className="spectrum-Dialog spectrum-Dialog--medium"
+                role="dialog"
+                aria-modal="true"
+              >
+                <div className="spectrum-Dialog-grid">
+                  <h1 className="spectrum-Dialog-heading">Export Video</h1>
+                  <hr className="spectrum-Divider spectrum-Divider--sizeM spectrum-Divider--horizontal spectrum-Dialog-divider" />
+                  {exporting ? (
+                    <div className="spectrum-Dialog-content">
+                      <p>{preprocessing ? "Preprocessing..." : ""}</p>
+                      <p>Generating: {generationProgress}%</p>
+                      <p>Compressing: {compressionProgress}%</p>
+                    </div>
+                  ) : (
+                    <>
+                      <section className="spectrum-Dialog-content">
+                        <p>
+                          Dimensions: {sourceData.width}x{sourceData.height}
+                        </p>
+                        <p>Duration: {Math.round(originalDuration / 1000)}s</p>
+                        <p>FPS: 60</p>
+                        <p>
+                          Estimated Export Time:{" "}
+                          {Math.round((originalDuration / 1000) * 3)}s
+                        </p>
+                      </section>
+                      <div className="spectrum-ButtonGroup spectrum-Dialog-buttonGroup spectrum-Dialog-buttonGroup--noFooter">
+                        <button
+                          className="spectrum-Button spectrum-Button--sizeM spectrum-Button--outline spectrum-Button--secondary spectrum-ButtonGroup-item"
+                          type="button"
+                          onClick={() => setExportVideoOpen(false)}
+                          style={{ marginRight: "10px" }}
+                        >
+                          <span className="spectrum-Button-label">Cancel</span>
+                        </button>
+                        <button
+                          className="spectrum-Button spectrum-Button--sizeM spectrum-Button--fill spectrum-Button--accent spectrum-ButtonGroup-item"
+                          type="button"
+                        >
+                          <span
+                            className="spectrum-Button-label"
+                            onClick={exportVideo}
+                          >
+                            Begin Export
+                          </span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </ModalContainer>
+      )}
       <ProjectCtrls>
         <button
           className="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM"
-          onClick={exportVideo}
+          onClick={openExport}
         >
           Export
         </button>
