@@ -231,7 +231,7 @@ const Tracks: React.FC<TracksProps> = ({
         name: "Video Track",
         start: 0,
         end: originalDuration,
-        gradient: gradients[0].konvaProps,
+        gradient: gradients[0],
       };
 
       console.info("initalVideoTrack", initalVideoTrack);

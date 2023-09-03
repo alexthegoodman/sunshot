@@ -57,6 +57,11 @@ let currentZoomPointY = 0;
 let currentScaleX = 0;
 let currentScaleY = 0;
 
+var stage = null;
+var gradientRect = null;
+var shadowRect = null;
+var group = null;
+
 const frictionalAnimation = (target, current, velocity, friction) => {
   const direction = target - current;
   const newVelocity = direction * Math.exp(-friction);
@@ -97,7 +102,7 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
   }, [originalCapture]);
 
   const initCanvas = async () => {
-    var stage = new Konva.Stage({
+    stage = new Konva.Stage({
       container: "container",
       width: width,
       height: height,
@@ -106,7 +111,7 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
     konvaLayer = new Konva.Layer();
     stage.add(konvaLayer);
 
-    var gradientRect = new Konva.Rect({
+    gradientRect = new Konva.Rect({
       x: 0,
       y: 0,
       width: width,
@@ -115,11 +120,11 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
       fillRadialGradientStartRadius: 0,
       fillRadialGradientEndPoint: { x: 0, y: 0 },
       fillRadialGradientEndRadius: width,
-      fillRadialGradientColorStops: videoTrack?.gradient,
+      fillRadialGradientColorStops: videoTrack?.gradient?.konvaProps,
     });
     konvaLayer.add(gradientRect);
 
-    var shadowRect = new Konva.Rect({
+    shadowRect = new Konva.Rect({
       x: width / 2 - innerWidth / 2,
       y: height / 2 - innerHeight / 2,
       width: innerWidth,
@@ -133,7 +138,7 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
     });
     konvaLayer.add(shadowRect);
 
-    var group = new Konva.Group({
+    group = new Konva.Group({
       x: width / 2 - innerWidth / 2,
       y: height / 2 - innerHeight / 2,
       clipFunc: function (ctx) {
@@ -241,6 +246,13 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
     zoomingIn = false;
     zoomingOut = false;
   };
+
+  React.useEffect(() => {
+    if (konvaLayer && gradientRect && videoTrack?.gradient) {
+      gradientRect.fillRadialGradientColorStops(videoTrack.gradient.konvaProps);
+      konvaLayer.draw();
+    }
+  }, [videoTrack?.gradient]);
 
   React.useEffect(() => {
     // startup the canvas
@@ -353,20 +365,23 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
     });
     ipcRenderer.on("export-video-com-progress", (event, arg) => {
       console.info("compression progress", arg);
-      setCompressionProgress(arg);
+      setCompressionProgress(Math.round(arg));
     });
   }, []);
 
   const exportVideo = () => {
     setExporting(true);
-    ipcRenderer.send("export-video", {
+    const exportParams = {
       duration: originalDuration,
       zoomInfo: zoomTracks.map((track) => ({
         start: track.start,
         end: track.end,
         zoom: track.zoomFactor,
       })),
-    });
+      backgroundInfo: [videoTrack.gradient.exportProps],
+    };
+    console.info("exportParams", exportParams);
+    ipcRenderer.send("export-video", exportParams);
   };
 
   const openExport = () => {

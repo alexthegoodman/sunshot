@@ -441,6 +441,7 @@ ipcMain.on("export-video", (event, args) => {
           inputFile: savePath + `/projects/${currentProjectId}/60fps.mp4`,
           outputFile: savePath + `/projects/${currentProjectId}/output.mp4`,
           zoomInfo: args.zoomInfo,
+          backgroundInfo: args.backgroundInfo,
         }),
         (progress) => {
           if (progress === -1) {
@@ -472,7 +473,8 @@ ipcMain.on("export-video", (event, args) => {
                 // open folder containing video
                 // spawn("explorer", [savePath + `/projects/${currentProjectId}`]);
                 shell.showItemInFolder(
-                  savePath + `/projects/${currentProjectId}`
+                  savePath +
+                    `/projects/${currentProjectId}/output_compressed.mp4`
                 );
               })
               .on("error", (err) => {
