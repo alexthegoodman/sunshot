@@ -30,10 +30,16 @@ function Home() {
 
   const startRecording = (sourceId) => {
     const source = sources.find((source) => source.id === sourceId);
+    const hwnd = source.id.split(":")[1];
+
+    console.info("source", source, hwnd);
+
     const { projectId } = ipcRenderer.sendSync("create-project");
     const sourceData = ipcRenderer.sendSync("save-source-data", {
       windowTitle: source.name,
+      hwnd,
     });
+
     setProjectId(projectId);
 
     console.info("project", projectId, sourceData);

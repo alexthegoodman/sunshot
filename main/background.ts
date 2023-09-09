@@ -11,7 +11,11 @@ import fetch from "electron-fetch";
 const { desktopCapturer } = require("electron");
 const path = require("path");
 
-const { print, setTargetWindow } = require("sunshot-recorder");
+const {
+  print,
+  setTargetWindow,
+  setTargetWindowHwnd,
+} = require("sunshot-recorder");
 const { startWorker } = require("sunshot-creator");
 const { spawn } = require("child_process");
 
@@ -197,10 +201,11 @@ ipcMain.on("get-sources", (event, arg) => {
     });
 });
 
-ipcMain.on("save-source-data", (event, { windowTitle }) => {
+ipcMain.on("save-source-data", (event, { windowTitle, hwnd }) => {
   // TODO: error handling
 
-  let sourceData = setTargetWindow(windowTitle);
+  // let sourceData = setTargetWindow(windowTitle);
+  let sourceData = setTargetWindowHwnd(hwnd);
 
   sourceData = JSON.parse(sourceData);
 
@@ -472,8 +477,13 @@ ipcMain.on("export-video", (event, args) => {
 
                 // open folder containing video
                 // spawn("explorer", [savePath + `/projects/${currentProjectId}`]);
-                shell.showItemInFolder(
-                  savePath +
+                // shell.showItemInFolder(
+                //   savePath +
+                //     `/projects/${currentProjectId}/output_compressed.mp4`
+                // );
+                shell.openExternal(
+                  "file://" +
+                    savePath +
                     `/projects/${currentProjectId}/output_compressed.mp4`
                 );
               })
