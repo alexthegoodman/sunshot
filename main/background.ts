@@ -150,8 +150,8 @@ ipcMain.on("open-source-picker", async (event, arg) => {
 
 ipcMain.on("open-editor", async (event, { projectId }) => {
   editorWindow = createWindow("editor", {
-    width: 1440,
-    height: 1024,
+    width: 1200 + 400,
+    height: 1200,
   });
 
   if (isProd) {

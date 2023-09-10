@@ -116,27 +116,27 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
       y: 0,
       width: width,
       height: height,
-      fillRadialGradientStartPoint: { x: 0, y: 0 },
-      fillRadialGradientStartRadius: 0,
-      fillRadialGradientEndPoint: { x: 0, y: 0 },
-      fillRadialGradientEndRadius: width,
-      fillRadialGradientColorStops: videoTrack?.gradient?.konvaProps,
+      fillLinearGradientStartPoint: { x: 0, y: 0 },
+      // fillLinearGradientStartRadius: 0,
+      fillLinearGradientEndPoint: { x: width, y: 0 },
+      // fillLinearGradientEndRadius: width,
+      fillLinearGradientColorStops: videoTrack?.gradient?.konvaProps,
     });
     konvaLayer.add(gradientRect);
 
-    shadowRect = new Konva.Rect({
-      x: width / 2 - innerWidth / 2,
-      y: height / 2 - innerHeight / 2,
-      width: innerWidth,
-      height: innerHeight,
-      fill: "black",
-      cornerRadius: 10,
-      shadowColor: "black",
-      shadowBlur: 10,
-      shadowOffset: { x: 10, y: 10 },
-      shadowOpacity: 0.5,
-    });
-    konvaLayer.add(shadowRect);
+    // shadowRect = new Konva.Rect({
+    //   x: width / 2 - innerWidth / 2,
+    //   y: height / 2 - innerHeight / 2,
+    //   width: innerWidth,
+    //   height: innerHeight,
+    //   fill: "black",
+    //   cornerRadius: 10,
+    //   shadowColor: "black",
+    //   shadowBlur: 10,
+    //   shadowOffset: { x: 10, y: 10 },
+    //   shadowOpacity: 0.5,
+    // });
+    // konvaLayer.add(shadowRect);
 
     group = new Konva.Group({
       x: width / 2 - innerWidth / 2,
@@ -152,8 +152,8 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
       image: videoElement,
       width: innerWidth,
       height: innerHeight,
-      cornerRadius: 10,
-      //   fill: "red",
+      // cornerRadius: 10,
+      fill: "black",
     });
 
     // add the shape to the layer
@@ -249,7 +249,7 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
 
   React.useEffect(() => {
     if (konvaLayer && gradientRect && videoTrack?.gradient) {
-      gradientRect.fillRadialGradientColorStops(videoTrack.gradient.konvaProps);
+      gradientRect.fillLinearGradientColorStops(videoTrack.gradient.konvaProps);
       konvaLayer.draw();
     }
   }, [videoTrack?.gradient]);
