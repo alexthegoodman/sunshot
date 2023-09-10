@@ -273,12 +273,19 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
     // works in tandem with playVideo()
     const frameTiming = 1000 / 60;
     let frameIndex = 0; // TODO: set according to currentTime
+    let onZoom = false;
     const playInterval = setInterval(() => {
       if (playing) {
+        // const layerWidth = konvaLayer.width();
+        // const layerHeight = konvaLayer.height();
+
         if (zoomingIn) {
           // zoom in konvaLayer
-          const layerWidth = konvaLayer.width();
-          const layerHeight = konvaLayer.height();
+          if (!onZoom) {
+            // console.info("zooming in", zoomPoint);
+            onZoom = true;
+          }
+
           //   const centeredZoomPoint = {
           //     x: zoomPoint.x - layerWidth / 2,
           //     y: zoomPoint.y - layerHeight / 2,
@@ -305,12 +312,12 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
             currentZoomPointY = height - innerHeight;
           }
 
-          console.info(
-            "zooming in",
-            zoomPoint.x,
-            currentZoomPointX,
-            konvaLayer.offsetX()
-          );
+          // console.info(
+          //   "zooming in",
+          //   zoomPoint.x,
+          //   currentZoomPointX,
+          //   konvaLayer.offsetX()
+          // );
 
           let zoomFactor = 2;
 
@@ -344,7 +351,44 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
           });
         } else if (zoomingOut) {
           // zoom out konvaLayer
-          resetKonvaLayer();
+          // resetKonvaLayer();
+
+          if (onZoom) {
+            // console.info("zooming out", zoomPoint);
+            onZoom = false;
+          }
+
+          let zoomPoint = {
+            x: 0,
+            y: 0,
+          };
+
+          currentZoomPointX =
+            currentZoomPointX +
+            frictionalAnimation(zoomPoint.x, currentZoomPointX, 0, friction1);
+          currentZoomPointY =
+            currentZoomPointY +
+            frictionalAnimation(zoomPoint.y, currentZoomPointY, 0, friction1);
+
+          console.info("zooming out", currentZoomPointX, currentZoomPointY);
+
+          let zoomFactor = 1;
+
+          currentScaleX =
+            currentScaleX +
+            frictionalAnimation(zoomFactor, currentScaleX, 0, friction2);
+          currentScaleY =
+            currentScaleY +
+            frictionalAnimation(zoomFactor, currentScaleY, 0, friction2);
+
+          konvaLayer.scale({
+            x: currentScaleX,
+            y: currentScaleY,
+          });
+          konvaLayer.offset({
+            x: currentZoomPointX,
+            y: currentZoomPointY,
+          });
         }
 
         konvaLayer.draw();
