@@ -39,6 +39,16 @@ const ModalContainer = styled.div`
     width: 500px;
     background-color: white;
     padding: 15px 25px 25px 25px;
+    position: relative;
+    z-index: 1001;
+  }
+  .modal-underlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100vw;
+    height: 100vh;
   }
 `;
 
@@ -448,6 +458,13 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
               </div>
             </div>
           </div>
+          <div
+            className="modal-underlay"
+            onClick={() => {
+              setExporting(false);
+              setExportVideoOpen(false);
+            }}
+          ></div>
         </ModalContainer>
       )}
       <ProjectCtrls>
