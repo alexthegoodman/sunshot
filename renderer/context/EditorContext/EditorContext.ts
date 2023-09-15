@@ -62,8 +62,15 @@ export interface VideoTrack extends Track {
   gradient: any;
 }
 
+export interface ZoomFactor {
+  id: string;
+  label: string;
+  previewValue: number;
+  exportValue: number;
+}
+
 export interface ZoomTrack extends Track {
-  zoomFactor: number;
+  zoomFactor: ZoomFactor;
   easing: KonvaEasings;
   // animationDuration ?
 }

@@ -66,6 +66,7 @@ let currentZoomPointX = 0;
 let currentZoomPointY = 0;
 let currentScaleX = 0;
 let currentScaleY = 0;
+let zoomFactor = 0;
 
 var stage = null;
 var gradientRect = null;
@@ -200,6 +201,7 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
               ((positions[point].y - sourceData.y) / sourceData.height) *
               height,
           };
+          zoomFactor = track.zoomFactor.previewValue;
 
           zoomingIn = true;
           zoomingOut = false;
@@ -209,6 +211,7 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
           Math.floor(timeElapsed) < Math.floor(track.end) &&
           Math.floor(timeElapsed) + refreshRate >= Math.floor(track.end)
         ) {
+          zoomFactor = 1;
           zoomingIn = false;
           zoomingOut = true;
         }
@@ -319,7 +322,7 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
           //   konvaLayer.offsetX()
           // );
 
-          let zoomFactor = 2;
+          // let zoomFactor = 2;
 
           currentScaleX =
             currentScaleX +
@@ -372,7 +375,7 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
 
           console.info("zooming out", currentZoomPointX, currentZoomPointY);
 
-          let zoomFactor = 1;
+          // let zoomFactor = 1;
 
           currentScaleX =
             currentScaleX +
@@ -430,7 +433,7 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
       zoomInfo: zoomTracks.map((track) => ({
         start: track.start,
         end: track.end,
-        zoom: track.zoomFactor,
+        zoom: track.zoomFactor.exportValue,
       })),
       backgroundInfo: [videoTrack.gradient.exportProps],
     };

@@ -482,9 +482,7 @@ ipcMain.on("export-video", (event, args) => {
                 //     `/projects/${currentProjectId}/output_compressed.mp4`
                 // );
                 shell.openExternal(
-                  "file://" +
-                    savePath +
-                    `/projects/${currentProjectId}/output_compressed.mp4`
+                  "file://" + savePath + `/projects/${currentProjectId}/`
                 );
               })
               .on("error", (err) => {

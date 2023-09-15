@@ -15,6 +15,7 @@ import TrackItem from "../TrackItem/TrackItem";
 import { motion } from "framer-motion";
 import { useElementSize } from "usehooks-ts";
 import { gradients } from "../VideoProperties/VideoProperties";
+import { zooms } from "../ZoomProperties/ZoomProperties";
 
 const TracksContainer = styled.section`
   position: relative;
@@ -250,7 +251,7 @@ const Tracks: React.FC<TracksProps> = ({
           name: "Zoom Track",
           start: 5000,
           end: 12000,
-          zoomFactor: 0.5,
+          zoomFactor: zooms[1],
           easing: KonvaEasings.EaseInOut,
         },
         {
@@ -258,7 +259,7 @@ const Tracks: React.FC<TracksProps> = ({
           name: "Zoom Track",
           start: 16000,
           end: 25000,
-          zoomFactor: 0.5,
+          zoomFactor: zooms[2],
           easing: KonvaEasings.EaseInOut,
         },
       ];
@@ -295,7 +296,7 @@ const Tracks: React.FC<TracksProps> = ({
       name: "Zoom Track",
       start: 0,
       end: 3000,
-      zoomFactor: 2,
+      zoomFactor: zooms[1],
       easing: KonvaEasings.EaseInOut,
     };
 

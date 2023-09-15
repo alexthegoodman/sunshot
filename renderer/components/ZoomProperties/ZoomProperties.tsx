@@ -15,6 +15,45 @@ import SelectField from "../SelectField/SelectField";
 import { FlexForm } from "../SharedStyles/SharedStyles";
 import SliderField from "../SliderField/SliderField";
 
+export const zooms = [
+  {
+    id: "0",
+    label: "150%",
+    previewValue: 1.5,
+    exportValue: 0.6667,
+  },
+  {
+    id: "1",
+    label: "200%",
+    previewValue: 2,
+    exportValue: 0.5,
+  },
+  {
+    id: "2",
+    label: "250%",
+    previewValue: 2.5,
+    exportValue: 0.4,
+  },
+  {
+    id: "3",
+    label: "300%",
+    previewValue: 3,
+    exportValue: 0.3333,
+  },
+  {
+    id: "4",
+    label: "350%",
+    previewValue: 3.5,
+    exportValue: 0.2857,
+  },
+  {
+    id: "5",
+    label: "400%",
+    previewValue: 4,
+    exportValue: 0.25,
+  },
+];
+
 const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
   trackData = null,
   updateTrack = () => console.info("updateTrack"),
@@ -60,7 +99,7 @@ const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
             updateTrack("zoomFactor", zoomFactor);
           }}
         /> */}
-        <SliderField
+        {/* <SliderField
           id="zoomFactor"
           label="Zoom"
           value={trackData.zoomFactor}
@@ -68,8 +107,18 @@ const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
             const zoomFactor = parseFloat(e.target.value);
             updateTrack("zoomFactor", zoomFactor);
           }}
-        />
+        /> */}
         <SelectField
+          id="zoomFactor"
+          label="Zoom"
+          items={zooms}
+          selectedItem={trackData.zoomFactor.id}
+          onItemSelect={(id) => {
+            const zoom = zooms.find((option) => option.id === id);
+            updateTrack("zoomFactor", zoom);
+          }}
+        />
+        {/* <SelectField
           id="easing"
           label="Easing"
           items={easingOptions}
@@ -82,7 +131,7 @@ const ZoomProperties: React.FC<ZoomPropertiesProps> = ({
             console.info("onItemSelect", id, easing, easingKey);
             updateTrack("easing", easingKey);
           }}
-        />
+        /> */}
       </FlexForm>
     </div>
   );
