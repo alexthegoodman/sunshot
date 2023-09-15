@@ -9,4 +9,5 @@ export interface KonvaCanvasProps {
   originalDuration: number;
   originalCapture25?: Buffer;
   sourceData: SourceData;
+  resolution: string;
 }
