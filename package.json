@@ -2,7 +2,7 @@
   "private": true,
   "name": "sunshot",
   "description": "Beautiful screen recorder",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Common <hello@madebycommon.com>",
   "main": "app/background.js",
   "build": {
