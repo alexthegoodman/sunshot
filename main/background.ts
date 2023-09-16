@@ -31,6 +31,12 @@ const ffprobePath = require("ffprobe-static").path.replace(
   "app.asar.unpacked"
 );
 
+// Specify the path to the folder containing FFmpeg DLLs.
+const ffmpeg6BinPath = __dirname + "/ffmpeg";
+
+// Append the --extra-plugin-path argument to Electron's command line.
+app.commandLine.appendSwitch("extra-plugin-path", ffmpeg6BinPath);
+
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
