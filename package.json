@@ -2,14 +2,15 @@
   "private": true,
   "name": "sunshot",
   "description": "Beautiful screen recorder",
-  "version": "1.0.2",
+  "version": "1.0.8",
   "author": "Common <hello@madebycommon.com>",
   "main": "app/background.js",
   "build": {
     "asarUnpack": [
       "node_modules/ffmpeg-static/bin/${os}/${arch}/ffmpeg",
       "node_modules/ffmpeg-static/index.js",
-      "node_modules/ffmpeg-static/package.json"
+      "node_modules/ffmpeg-static/package.json",
+      "ffmpeg"
     ],
     "buildDependenciesFromSource": true
   },

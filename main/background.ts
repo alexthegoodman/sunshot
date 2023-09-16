@@ -11,14 +11,6 @@ import fetch from "electron-fetch";
 const { desktopCapturer } = require("electron");
 const path = require("path");
 
-const {
-  print,
-  setTargetWindow,
-  setTargetWindowHwnd,
-} = require("sunshot-recorder");
-const { startWorker } = require("sunshot-creator");
-const { spawn } = require("child_process");
-
 // https://alexandercleasby.dev/blog/use-ffmpeg-electron
 const ffmpeg = require("fluent-ffmpeg");
 
@@ -32,13 +24,33 @@ const ffprobePath = require("ffprobe-static").path.replace(
 );
 
 // Specify the path to the folder containing FFmpeg DLLs.
-const ffmpeg6BinPath = __dirname + "/ffmpeg";
+// const ffmpeg6BinPath = __dirname + "/ffmpeg";
+
+// Specify the path to the folder containing FFmpeg DLLs.
+const ffmpeg6BinPath = path.join(__dirname, "../../app.asar.unpacked/ffmpeg");
+
+console.info("ffmpegPath", ffmpegPath, ffmpeg6BinPath);
+
+// write out path to file
+
+// fs.writeFileSync("ffmpeg6BinPath.txt", ffmpeg6BinPath);
+
+// Modify the PATH environment variable to include the FFmpeg path.
+process.env.PATH = `${ffmpegPath};${ffmpeg6BinPath};${process.env.PATH}`;
 
 // Append the --extra-plugin-path argument to Electron's command line.
 app.commandLine.appendSwitch("extra-plugin-path", ffmpeg6BinPath);
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
+
+const {
+  print,
+  setTargetWindow,
+  setTargetWindowHwnd,
+} = require("sunshot-recorder");
+const { startWorker } = require("sunshot-creator");
+const { spawn } = require("child_process");
 
 const isProd: boolean = process.env.NODE_ENV === "production";
 
