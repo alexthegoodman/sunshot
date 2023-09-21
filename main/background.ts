@@ -169,8 +169,10 @@ ipcMain.on("open-source-picker", async (event, arg) => {
 ipcMain.on("open-editor", async (event, { projectId }) => {
   editorWindow = createWindow("editor", {
     width: 1200 + 400,
-    height: 1200,
+    height: 1000,
   });
+
+  editorWindow.setMenu(null);
 
   if (isProd) {
     await editorWindow.loadURL("app://./editor.html");

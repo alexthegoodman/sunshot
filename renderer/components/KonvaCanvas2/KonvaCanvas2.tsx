@@ -60,8 +60,8 @@ let zoomingIn = false;
 let zoomingOut = false;
 let zoomPoint = null;
 let konvaVideo = null;
-let friction1 = 5;
-let friction2 = 5;
+let friction1 = 4;
+let friction2 = 4;
 let currentZoomPointX = 0;
 let currentZoomPointY = 0;
 let currentScaleX = 0;
@@ -101,8 +101,8 @@ const KonvaCanvas2: React.FC<KonvaCanvas2Props> = ({
   const width25 = 3840 / 4;
   const height25 = 2160 / 4;
 
-  const innerWidth = sourceData.width / 4;
-  const innerHeight = sourceData.height / 4;
+  const innerWidth = width * 0.8;
+  const innerHeight = height * 0.8;
 
   const videoElement = React.useMemo(() => {
     const element = document.createElement("video");
