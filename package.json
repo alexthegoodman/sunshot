@@ -2,7 +2,7 @@
   "private": true,
   "name": "sunshot",
   "description": "Beautiful screen recorder",
-  "version": "1.0.9",
+  "version": "1.0.92",
   "author": "Common <hello@madebycommon.com>",
   "main": "app/background.js",
   "build": {
@@ -12,7 +12,13 @@
       "node_modules/ffmpeg-static/package.json",
       "ffmpeg"
     ],
-    "buildDependenciesFromSource": true
+    "buildDependenciesFromSource": true,
+    "appId": "com.madebycommon.sunshot",
+    "productName": "Sunshot",
+    "directories": {
+      "buildResources": "resources"
+    },
+    "copyright": "Copyright (c) 2023 Common"
   },
   "scripts": {
     "dev": "nextron",
